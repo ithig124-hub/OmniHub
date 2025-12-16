@@ -89,11 +89,21 @@ class InputHandler {
       
       if (this.lastKeyPressed === 'ArrowRight') {
         console.log('➡️ + Space: Navigate Next');
-        this.nav.next();
+        // Use OmniHub API to navigate (which triggers loadModule)
+        if (window.OmniHub && window.OmniHub.next) {
+          window.OmniHub.next();
+        } else {
+          this.nav.next();
+        }
         this.showNavigationFeedback('next');
       } else if (this.lastKeyPressed === 'ArrowLeft') {
         console.log('⬅️ + Space: Navigate Previous');
-        this.nav.previous();
+        // Use OmniHub API to navigate (which triggers loadModule)
+        if (window.OmniHub && window.OmniHub.previous) {
+          window.OmniHub.previous();
+        } else {
+          this.nav.previous();
+        }
         this.showNavigationFeedback('prev');
       }
       
