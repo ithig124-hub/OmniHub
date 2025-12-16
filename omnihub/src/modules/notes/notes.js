@@ -970,6 +970,8 @@ window.notesModule = {
         if (notesUI && notesManager?.initialized) {
             notesUI.render();
         }
+        // Sync to DataStore
+        syncNotesToDataStore();
     },
     
     onDeactivate: () => {
@@ -982,6 +984,9 @@ window.notesModule = {
                 notesManager.updateNote(notesManager.currentNote.id, {
                     title: title || 'Untitled',
                     content: content || ''
+                }).then(() => {
+                    // Sync to DataStore after save
+                    syncNotesToDataStore();
                 });
             }
         }
