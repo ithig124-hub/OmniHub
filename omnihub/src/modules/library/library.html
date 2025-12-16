@@ -494,10 +494,10 @@
     let favorites = JSON.parse(localStorage.getItem('omnihub_favorites') || '[]');
     let isSearching = false;
     
-    // DOM Elements
-    const searchInput = document.getElementById('search-input');
-    const searchButton = document.getElementById('search-btn');
-    const clearButton = document.getElementById('clear-search');
+    // DOM Elements - Fixed IDs to match HTML
+    const searchInput = document.getElementById('library-search');
+    const searchButton = document.getElementById('search-button');
+    const clearButton = document.getElementById('search-clear');
     const searchResults = document.getElementById('search-results');
     const searchStatus = document.getElementById('search-status');
     const libraryBooks = document.getElementById('library-books');
@@ -505,6 +505,10 @@
     const pdfModal = document.getElementById('pdf-viewer-modal');
     const pdfIframe = document.getElementById('pdf-iframe');
     const pdfTitle = document.getElementById('pdf-title');
+    
+    console.log('📚 Library module initializing...');
+    console.log('Search input found:', !!searchInput);
+    console.log('Search button found:', !!searchButton);
     
     // Tab switching
     document.querySelectorAll('.tab-button').forEach(btn => {
@@ -541,20 +545,26 @@
       searchStatus.textContent = 'Searching Internet Archive...';
       searchResults.innerHTML = '<div class="loading-spinner">🔄 Searching...</div>';
       
+      console.log('🔍 Searching for:', query);
+      
       try {
-        const mediaType = document.getElementById('media-type').value;
-        const sortBy = document.getElementById('sort-by').value;
+        const filterType = document.getElementById('filter-type')?.value || 'all';
+        const sortBy = document.getElementById('sort-by')?.value || 'relevance';
         
         let searchQuery = query;
-        if (mediaType !== 'all') {
-          searchQuery += ` AND mediatype:${mediaType}`;
+        if (filterType !== 'all') {
+          searchQuery += ` AND mediatype:${filterType}`;
         }
         
         const sortParam = sortBy === 'date' ? 'date' : sortBy === 'downloads' ? 'downloads' : '';
         const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(searchQuery)}&fl[]=identifier&fl[]=title&fl[]=creator&fl[]=description&fl[]=year&fl[]=mediatype&fl[]=downloads&rows=30&page=1&output=json${sortParam ? '&sort[]=' + sortParam + ' desc' : ''}`;
         
+        console.log('📡 API URL:', url);
+        
         const response = await fetch(url);
         const data = await response.json();
+        
+        console.log('📦 API Response:', data);
         
         if (data.response && data.response.docs && data.response.docs.length > 0) {
           searchStatus.textContent = `Found ${data.response.numFound.toLocaleString()} results`;
