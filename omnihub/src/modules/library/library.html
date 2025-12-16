@@ -709,20 +709,44 @@
     }
     
     // Event Listeners
-    searchButton?.addEventListener('click', () => searchBooks(searchInput.value));
-    searchInput?.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') searchBooks(searchInput.value);
-    });
-    clearButton?.addEventListener('click', () => {
-      searchInput.value = '';
-      searchResults.innerHTML = '';
-      searchStatus.textContent = 'Search for books, documents, and collections...';
-    });
+    if (searchButton) {
+      searchButton.addEventListener('click', () => {
+        console.log('🔘 Search button clicked');
+        searchBooks(searchInput.value);
+      });
+    }
+    
+    if (searchInput) {
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          console.log('⌨️ Enter pressed');
+          searchBooks(searchInput.value);
+        }
+      });
+      
+      // Show/hide clear button based on input
+      searchInput.addEventListener('input', () => {
+        if (clearButton) {
+          clearButton.style.display = searchInput.value ? 'block' : 'none';
+        }
+      });
+    }
+    
+    if (clearButton) {
+      clearButton.addEventListener('click', () => {
+        searchInput.value = '';
+        clearButton.style.display = 'none';
+        searchResults.innerHTML = '';
+        searchStatus.textContent = 'Search for books, documents, and collections...';
+      });
+    }
+    
     document.getElementById('close-pdf-viewer')?.addEventListener('click', closeViewer);
     
     // Initialize
     renderMyLibrary();
     console.log('📚 Library module loaded with Internet Archive integration');
+    console.log('✅ All event listeners attached');
   </script>
 </body>
 </html>
