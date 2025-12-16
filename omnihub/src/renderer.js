@@ -358,29 +358,14 @@ function updateUI(module, index) {
 }
 
 // =======================
-// LOADING & ERROR SCREENS
+// ERROR SCREEN
 // =======================
-function showLoading(moduleName) {
-  if (loadingScreen) {
-    loadingScreen.style.display = 'flex';
-    const loadingText = loadingScreen.querySelector('.loading-text');
-    if (loadingText) {
-      loadingText.textContent = `Loading ${moduleName}...`;
-    }
-  }
-}
-
-function hideLoading() {
-  if (loadingScreen) {
-    loadingScreen.style.opacity = '0';
-    setTimeout(() => {
-      loadingScreen.style.display = 'none';
-      loadingScreen.style.opacity = '1';
-    }, 150);
-  }
-}
-
 function showError(title, message) {
+  // Ensure loading is hidden
+  if (loadingController) {
+    loadingController.forceHide();
+  }
+  
   const errorHtml = `
     <div class="error-container">
       <div class="error-icon">⚠️</div>
