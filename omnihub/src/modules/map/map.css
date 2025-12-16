@@ -459,18 +459,41 @@ textarea.glass-input {
 .ol-control {
   background: rgba(255, 255, 255, 0.15) !important;
   backdrop-filter: blur(10px);
-  border-radius: 8px !important;
+  border-radius: 12px !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 .ol-control button {
   background: rgba(255, 255, 255, 0.1) !important;
   color: #fff !important;
-  border-radius: 6px !important;
+  border-radius: 8px !important;
 }
 
 .ol-control button:hover {
   background: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Bigger Zoom Controls */
+.ol-zoom {
+  position: absolute !important;
+  left: auto !important;
+  right: 20px !important;
+  bottom: 100px !important;
+  top: auto !important;
+}
+
+.ol-zoom button {
+  width: 44px !important;
+  height: 44px !important;
+  font-size: 24px !important;
+  font-weight: bold !important;
+  margin: 4px !important;
+}
+
+.ol-zoom-in, .ol-zoom-out {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 /* =======================
