@@ -25,12 +25,12 @@ if (typeof require !== 'undefined') {
 // MODULE CONFIGURATION
 // =======================
 const MODULES = [
-  { id: 'map', name: 'Map', icon: '🗺️', path: 'modules/map/map.html' },
-  { id: 'notes', name: 'Notes', icon: '📝', path: 'modules/notes/notes.html' },
-  { id: 'library', name: 'Library', icon: '📚', path: 'modules/library/library.html' },
-  { id: 'search', name: 'Search', icon: '🔍', path: 'modules/search/search.html' },
-  { id: 'dashboard', name: 'Dashboard', icon: '📊', path: 'modules/dashboard/dashboard.html' },
-  { id: 'tracking', name: 'Tracking', icon: '📍', path: 'modules/tracking/tracking.html' }
+  { id: 'map', name: 'Map', icon: '🗺️', path: './modules/map/map.html' },
+  { id: 'notes', name: 'Notes', icon: '📝', path: './modules/notes/notes.html' },
+  { id: 'library', name: 'Library', icon: '📚', path: './modules/library/library.html' },
+  { id: 'search', name: 'Search', icon: '🔍', path: './modules/search/search.html' },
+  { id: 'dashboard', name: 'Dashboard', icon: '📊', path: './modules/dashboard/dashboard.html' },
+  { id: 'tracking', name: 'Tracking', icon: '📍', path: './modules/tracking/tracking.html' }
 ];
 
 // =======================
