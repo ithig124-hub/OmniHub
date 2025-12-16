@@ -390,6 +390,25 @@
     <div id="navigation-indicator"></div>
   </div>
   
+  <!-- CRITICAL: Inline fallback to ensure loading screen eventually hides -->
+  <script>
+    (function() {
+      // Force hide loading screen after 6 seconds no matter what
+      setTimeout(function() {
+        var ls = document.getElementById('loading-screen');
+        if (ls && ls.style.display !== 'none' && ls.style.opacity !== '0') {
+          console.warn('⚠️ INLINE FALLBACK: Forcing loading screen to hide');
+          ls.style.transition = 'opacity 0.3s ease';
+          ls.style.opacity = '0';
+          ls.style.pointerEvents = 'none';
+          setTimeout(function() {
+            ls.style.display = 'none';
+          }, 300);
+        }
+      }, 6000);
+    })();
+  </script>
+  
   <!-- Core Systems -->
   <script src="core/loading.js"></script>
   <script src="core/navigation.js"></script>
