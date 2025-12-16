@@ -691,28 +691,7 @@
       searchResults.innerHTML = '';
       
       books.forEach(book => {
-        const card = document.createElement('div');
-        card.className = 'book-card';
-        
-        const isInLibrary = myLibrary.some(b => b.identifier === book.identifier);
-        const isFavorite = favorites.some(b => b.identifier === book.identifier);
-        
-        card.innerHTML = `
-          <div class="book-cover">
-            <img src="https://archive.org/services/img/${book.identifier}" alt="${book.title}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 150%22><rect fill=%22%23667eea%22 width=%22100%22 height=%22150%22/><text x=%2250%22 y=%2275%22 fill=%22white%22 text-anchor=%22middle%22 font-size=%2240%22>📚</text></svg>'">
-          </div>
-          <div class="book-title">${book.title || 'Untitled'}</div>
-          <div class="book-author">${book.creator || 'Unknown Author'}</div>
-          <div class="book-year">${book.year || ''}</div>
-          <div class="book-actions">
-            <button class="book-btn read-btn" onclick="openBook('${book.identifier}', '${(book.title || '').replace(/'/g, "\\'")}')">📖 Read</button>
-            <button class="book-btn ${isInLibrary ? 'added' : ''}" onclick="toggleLibrary('${book.identifier}', this)" title="${isInLibrary ? 'Remove from Library' : 'Add to Library'}">${isInLibrary ? '✓' : '+'}</button>
-            <button class="book-btn ${isFavorite ? 'favorited' : ''}" onclick="toggleFavorite('${book.identifier}', this)" title="${isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}">${isFavorite ? '❤️' : '🤍'}</button>
-          </div>
-        `;
-        
-        // Store book data for later use
-        card.dataset.book = JSON.stringify(book);
+        const card = createResultCard(book);
         searchResults.appendChild(card);
       });
     }
