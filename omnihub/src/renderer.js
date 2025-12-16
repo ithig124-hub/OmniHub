@@ -196,7 +196,7 @@ function setupDirectKeyboardNavigation() {
       }
     }
   });
-  console.log('⌨️ Direct keyboard navigation enabled (Ctrl+Arrow, 1-6 keys)');
+  console.log('⌨️ Direct keyboard navigation enabled (Ctrl+Arrow, 1-7 keys)');
 }
 
 // =======================
