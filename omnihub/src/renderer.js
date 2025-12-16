@@ -275,7 +275,21 @@ function createModuleSelector() {
     moduleSelector.appendChild(option);
   });
   
-  console.log('🎯 Module selector created');
+  // Add fallback change handler for selector (in case InputHandler doesn't initialize)
+  moduleSelector.addEventListener('change', (e) => {
+    const moduleId = e.target.value;
+    const moduleIndex = MODULES.findIndex(m => m.id === moduleId);
+    
+    if (moduleIndex !== -1 && moduleIndex !== navigationController.getCurrentIndex()) {
+      console.log('📍 Selector changed to:', moduleId);
+      const result = navigationController.jumpTo(moduleIndex);
+      if (result.success) {
+        loadModule(result.index, 'jump');
+      }
+    }
+  });
+  
+  console.log('🎯 Module selector created with change handler');
 }
 
 // =======================
