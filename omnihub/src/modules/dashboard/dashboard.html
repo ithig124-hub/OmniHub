@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniHub - Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #3d5ca3 100%);
+      color: white;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .dashboard-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .dashboard-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .dashboard-header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+    
+    .dashboard-header p {
+      font-size: 16px;
+      opacity: 0.8;
+    }
+    
+    .widgets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    .widget {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 24px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .widget:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .widget-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .widget-icon {
+      font-size: 32px;
+    }
+    
+    .widget-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .widget-content {
+      font-size: 14px;
+      line-height: 1.6;
+      opacity: 0.9;
+    }
+    
+    .stat-value {
+      font-size: 48px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+    
+    .quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .action-btn {
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+      <h1>📊 Dashboard</h1>
+      <p>Welcome to OmniHub - Your Personal Command Center</p>
+    </div>
+    
+    <div class="widgets-grid">
+      <!-- Time Widget -->
+      <div class="widget">
+        <div class="widget-header">
+          <span class="widget-icon">🕐</span>
+          <span class="widget-title">Current Time</span>
+        </div>
+        <div class="widget-content">
+          <div class="stat-value" id="current-time">--:--</div>
+          <div class="stat-label" id="current-date">Loading...</div>
+        </div>
+      </div>
+      
+      <!-- Quick Stats -->
+      <div class="widget">
+        <div class="widget-header">
+          <span class="widget-icon">📈</span>
+          <span class="widget-title">Quick Stats</span>
+        </div>
+        <div class="widget-content">
+          <div class="stat-value">6</div>
+          <div class="stat-label">Active Modules</div>
+        </div>
+      </div>
+      
+      <!-- Notes Summary -->
+      <div class="widget">
+        <div class="widget-header">
+          <span class="widget-icon">📝</span>
+          <span class="widget-title">Notes</span>
+        </div>
+        <div class="widget-content">
+          <p>Access your notes and organize your thoughts.</p>
+          <div class="quick-actions">
+            <button class="action-btn" onclick="navigateToNotes()">Open Notes</button>
+            <button class="action-btn">New Note</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Map Overview -->
+      <div class="widget">
+        <div class="widget-header">
+          <span class="widget-icon">🗺️</span>
+          <span class="widget-title">Map</span>
+        </div>
+        <div class="widget-content">
+          <p>Explore locations and save your favorite places.</p>
+          <div class="quick-actions">
+            <button class="action-btn" onclick="navigateToMap()">Open Map</button>
+            <button class="action-btn">Saved Pins</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Library -->
+      <div class="widget">
+        <div class="widget-header">
+          <span class="widget-icon">📚</span>
+          <span class="widget-title">Library</span>
+        </div>
+        <div class="widget-content">
+          <p>Your personal collection of resources and references.</p>
+          <div class="quick-actions">
+            <button class="action-btn" onclick="navigateToLibrary()">Browse Library</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tracking -->
+      <div class="widget">
+        <div class="widget-header">
+          <span class="widget-icon">📍</span>
+          <span class="widget-title">Tracking</span>
+        </div>
+        <div class="widget-content">
+          <p>Monitor and track your activities and progress.</p>
+          <div class="quick-actions">
+            <button class="action-btn" onclick="navigateToTracking()">View Tracking</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Update time widget
+    function updateTime() {
+      const now = new Date();
+      const timeEl = document.getElementById('current-time');
+      const dateEl = document.getElementById('current-date');
+      
+      if (timeEl) {
+        timeEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+      if (dateEl) {
+        dateEl.textContent = now.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      }
+    }
+    
+    // Navigation helpers
+    function navigateToNotes() {
+      if (window.parent && window.parent.OmniHub) {
+        window.parent.OmniHub.navigateToModule('notes');
+      }
+    }
+    
+    function navigateToMap() {
+      if (window.parent && window.parent.OmniHub) {
+        window.parent.OmniHub.navigateToModule('map');
+      }
+    }
+    
+    function navigateToLibrary() {
+      if (window.parent && window.parent.OmniHub) {
+        window.parent.OmniHub.navigateToModule('library');
+      }
+    }
+    
+    function navigateToTracking() {
+      if (window.parent && window.parent.OmniHub) {
+        window.parent.OmniHub.navigateToModule('tracking');
+      }
+    }
+    
+    // Initialize
+    updateTime();
+    setInterval(updateTime, 1000);
+    
+    console.log('📊 Dashboard module loaded');
+  </script>
+</body>
+</html>
