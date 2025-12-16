@@ -393,6 +393,8 @@
   <!-- CRITICAL: Inline fallback to ensure loading screen eventually hides -->
   <script>
     (function() {
+      console.log('🚀 OmniHub inline script running...');
+      
       // Force hide loading screen after 6 seconds no matter what
       setTimeout(function() {
         var ls = document.getElementById('loading-screen');
@@ -406,6 +408,16 @@
           }, 300);
         }
       }, 6000);
+      
+      // Global error handler to catch script loading issues
+      window.onerror = function(msg, url, line, col, error) {
+        console.error('❌ Global error:', msg, 'at', url, 'line', line);
+        var ls = document.getElementById('loading-screen');
+        if (ls) {
+          ls.style.display = 'none';
+        }
+        return false;
+      };
     })();
   </script>
   
