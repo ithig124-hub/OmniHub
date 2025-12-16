@@ -262,7 +262,96 @@ function createNavigationBar() {
 }
 
 // =======================
-// MODULE SELECTOR (Top-Right)
+// MODULE DROPDOWN (Click module name to open)
+// =======================
+function createModuleDropdown() {
+  if (!moduleDropdown || !moduleTitle) return;
+  
+  moduleDropdown.innerHTML = '';
+  
+  MODULES.forEach((module, index) => {
+    const item = document.createElement('div');
+    item.className = 'dropdown-item' + (index === 1 ? ' active' : '');
+    item.setAttribute('data-module-id', module.id);
+    item.setAttribute('data-index', index);
+    item.innerHTML = `
+      <span class="dropdown-item-icon">${module.icon}</span>
+      <span>${module.name}</span>
+    `;
+    
+    item.addEventListener('click', () => {
+      if (index !== navigationController.getCurrentIndex()) {
+        const result = navigationController.jumpTo(index);
+        if (result.success) {
+          loadModule(result.index, 'jump');
+        }
+      }
+      toggleDropdown(false);
+    });
+    
+    moduleDropdown.appendChild(item);
+  });
+  
+  // Click on title to toggle dropdown
+  moduleTitle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleDropdown();
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#module-title-container')) {
+      toggleDropdown(false);
+    }
+  });
+  
+  // Close dropdown on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      toggleDropdown(false);
+    }
+  });
+  
+  console.log('📍 Module dropdown created');
+}
+
+function toggleDropdown(show) {
+  if (!moduleDropdown || !moduleTitle) return;
+  
+  const isHidden = moduleDropdown.classList.contains('hidden');
+  if (show === undefined) show = isHidden;
+  
+  if (show) {
+    moduleDropdown.classList.remove('hidden');
+    moduleTitle.classList.add('open');
+  } else {
+    moduleDropdown.classList.add('hidden');
+    moduleTitle.classList.remove('open');
+  }
+}
+
+// =======================
+// HEADER TIME DISPLAY
+// =======================
+function setupHeaderTime() {
+  const headerTime = document.getElementById('header-time');
+  if (!headerTime) return;
+  
+  function updateTime() {
+    const now = new Date();
+    headerTime.textContent = now.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit'
+    });
+  }
+  
+  updateTime();
+  setInterval(updateTime, 1000);
+  console.log('⏰ Header time display active');
+}
+
+// =======================
+// MODULE SELECTOR (Hidden, for compatibility)
 // =======================
 function createModuleSelector() {
   if (!moduleSelector) return;
@@ -273,28 +362,13 @@ function createModuleSelector() {
     const option = document.createElement('option');
     option.value = module.id;
     option.textContent = `${module.icon} ${module.name}`;
-    // Select Notes module (index 1) by default
     if (index === 1) {
       option.selected = true;
     }
     moduleSelector.appendChild(option);
   });
   
-  // Add fallback change handler for selector (in case InputHandler doesn't initialize)
-  moduleSelector.addEventListener('change', (e) => {
-    const moduleId = e.target.value;
-    const moduleIndex = MODULES.findIndex(m => m.id === moduleId);
-    
-    if (moduleIndex !== -1 && moduleIndex !== navigationController.getCurrentIndex()) {
-      console.log('📍 Selector changed to:', moduleId);
-      const result = navigationController.jumpTo(moduleIndex);
-      if (result.success) {
-        loadModule(result.index, 'jump');
-      }
-    }
-  });
-  
-  console.log('🎯 Module selector created with change handler');
+  console.log('🎯 Module selector created (hidden)');
 }
 
 // =======================
