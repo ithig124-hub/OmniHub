@@ -209,6 +209,55 @@ html, body {
 }
 
 /* =======================
+   PRESET BUTTONS
+======================= */
+.preset-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.preset-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid transparent;
+  border-radius: 14px;
+  color: var(--theme-text);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  text-align: left;
+}
+
+.preset-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateX(5px);
+}
+
+.preset-btn.active {
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.preset-icon {
+  font-size: 1.75rem;
+}
+
+.preset-name {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.preset-desc {
+  font-size: 0.8rem;
+  color: var(--theme-text-muted);
+  margin-left: auto;
+}
+
+/* =======================
    COLOR PALETTE
 ======================= */
 .color-palette {
