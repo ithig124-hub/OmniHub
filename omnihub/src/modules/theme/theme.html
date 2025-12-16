@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniHub - Theme & Settings</title>
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body>
+  <div class="theme-container" id="theme-container">
+    <!-- Header -->
+    <header class="theme-header">
+      <h1 class="theme-title">
+        <span class="theme-icon">🎨</span>
+        Theme & Settings
+      </h1>
+      <p class="theme-subtitle">Customize your OmniHub experience</p>
+    </header>
+    
+    <!-- Live Preview Panel -->
+    <div class="preview-panel glass-panel">
+      <h3 class="section-title">Live Preview</h3>
+      <div class="preview-box" id="preview-box">
+        <div class="preview-header">🌐 OmniHub</div>
+        <div class="preview-content">
+          <div class="preview-card">Sample Card</div>
+          <div class="preview-text">This is how your theme will look</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Settings Grid -->
+    <div class="settings-grid">
+      
+      <!-- Theme Mode Section -->
+      <section class="settings-section glass-panel">
+        <h3 class="section-title">
+          <span>🌓</span> Theme Mode
+        </h3>
+        <div class="theme-modes">
+          <button class="mode-btn active" data-mode="auto" id="mode-auto">
+            <span class="mode-icon">🔄</span>
+            <span class="mode-label">Auto</span>
+          </button>
+          <button class="mode-btn" data-mode="light" id="mode-light">
+            <span class="mode-icon">☀️</span>
+            <span class="mode-label">Light</span>
+          </button>
+          <button class="mode-btn" data-mode="dark" id="mode-dark">
+            <span class="mode-icon">🌙</span>
+            <span class="mode-label">Dark</span>
+          </button>
+        </div>
+      </section>
+      
+      <!-- Accent Color Section -->
+      <section class="settings-section glass-panel">
+        <h3 class="section-title">
+          <span>🎨</span> Accent Color
+        </h3>
+        <div class="color-palette" id="color-palette">
+          <button class="color-btn active" data-color="#667eea" style="background: linear-gradient(135deg, #667eea, #764ba2)"></button>
+          <button class="color-btn" data-color="#10b981" style="background: linear-gradient(135deg, #10b981, #059669)"></button>
+          <button class="color-btn" data-color="#f59e0b" style="background: linear-gradient(135deg, #f59e0b, #d97706)"></button>
+          <button class="color-btn" data-color="#ef4444" style="background: linear-gradient(135deg, #ef4444, #dc2626)"></button>
+          <button class="color-btn" data-color="#8b5cf6" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed)"></button>
+          <button class="color-btn" data-color="#06b6d4" style="background: linear-gradient(135deg, #06b6d4, #0891b2)"></button>
+          <button class="color-btn" data-color="#ec4899" style="background: linear-gradient(135deg, #ec4899, #db2777)"></button>
+          <input type="color" id="custom-color" class="custom-color-input" value="#667eea" title="Custom Color">
+        </div>
+      </section>
+      
+      <!-- Glass Effects Section -->
+      <section class="settings-section glass-panel">
+        <h3 class="section-title">
+          <span>✨</span> Glass Effects
+        </h3>
+        <div class="slider-group">
+          <label class="slider-label">
+            <span>Blur Intensity</span>
+            <span class="slider-value" id="blur-value">10px</span>
+          </label>
+          <input type="range" id="blur-slider" min="0" max="30" value="10" class="slider">
+        </div>
+        <div class="slider-group">
+          <label class="slider-label">
+            <span>Glass Opacity</span>
+            <span class="slider-value" id="opacity-value">15%</span>
+          </label>
+          <input type="range" id="opacity-slider" min="5" max="40" value="15" class="slider">
+        </div>
+        <div class="slider-group">
+          <label class="slider-label">
+            <span>Border Glow</span>
+            <span class="slider-value" id="glow-value">20%</span>
+          </label>
+          <input type="range" id="glow-slider" min="0" max="50" value="20" class="slider">
+        </div>
+      </section>
+      
+      <!-- Background Section -->
+      <section class="settings-section glass-panel">
+        <h3 class="section-title">
+          <span>🖼️</span> Background
+        </h3>
+        <div class="gradient-options">
+          <button class="gradient-btn active" data-gradient="ocean" style="background: linear-gradient(135deg, #1e3c72, #2a5298)"></button>
+          <button class="gradient-btn" data-gradient="sunset" style="background: linear-gradient(135deg, #fa709a, #fee140)"></button>
+          <button class="gradient-btn" data-gradient="forest" style="background: linear-gradient(135deg, #134e5e, #71b280)"></button>
+          <button class="gradient-btn" data-gradient="night" style="background: linear-gradient(135deg, #0f0c29, #302b63, #24243e)"></button>
+          <button class="gradient-btn" data-gradient="aurora" style="background: linear-gradient(135deg, #43cea2, #185a9d)"></button>
+          <button class="gradient-btn" data-gradient="space" style="background: linear-gradient(135deg, #000428, #004e92)"></button>
+        </div>
+        <div class="upload-section">
+          <label class="upload-btn" for="wallpaper-upload">
+            <span>📤</span> Upload Custom Wallpaper
+          </label>
+          <input type="file" id="wallpaper-upload" accept="image/*" hidden>
+          <button class="btn-secondary" id="clear-wallpaper" style="display: none;">Clear Wallpaper</button>
+        </div>
+      </section>
+      
+      <!-- Scenery Section -->
+      <section class="settings-section glass-panel">
+        <h3 class="section-title">
+          <span>🌌</span> Ambient Scenery
+        </h3>
+        <div class="scenery-options">
+          <button class="scenery-btn active" data-scenery="none">
+            <span class="scenery-icon">⭕</span>
+            <span>None</span>
+          </button>
+          <button class="scenery-btn" data-scenery="particles">
+            <span class="scenery-icon">✨</span>
+            <span>Particles</span>
+          </button>
+          <button class="scenery-btn" data-scenery="rain">
+            <span class="scenery-icon">🌧️</span>
+            <span>Rain</span>
+          </button>
+          <button class="scenery-btn" data-scenery="stars">
+            <span class="scenery-icon">⭐</span>
+            <span>Stars</span>
+          </button>
+          <button class="scenery-btn" data-scenery="waves">
+            <span class="scenery-icon">🌊</span>
+            <span>Waves</span>
+          </button>
+        </div>
+        <div class="toggle-group">
+          <label class="toggle-label">
+            <span>Ambient Sounds</span>
+            <input type="checkbox" id="ambient-sound-toggle" class="toggle-input">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </section>
+      
+      <!-- Motion & Animation Section -->
+      <section class="settings-section glass-panel">
+        <h3 class="section-title">
+          <span>🎬</span> Motion & Animation
+        </h3>
+        <div class="slider-group">
+          <label class="slider-label">
+            <span>Animation Speed</span>
+            <span class="slider-value" id="motion-value">1.0x</span>
+          </label>
+          <input type="range" id="motion-slider" min="0" max="20" value="10" class="slider">
+        </div>
+        <div class="toggle-group">
+          <label class="toggle-label">
+            <span>Reduce Motion</span>
+            <input type="checkbox" id="reduce-motion-toggle" class="toggle-input">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-group">
+          <label class="toggle-label">
+            <span>Smooth Transitions</span>
+            <input type="checkbox" id="smooth-transitions-toggle" class="toggle-input" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </section>
+      
+      <!-- Visual Grain Section -->
+      <section class="settings-section glass-panel">
+        <h3 class="section-title">
+          <span>📺</span> Visual Texture
+        </h3>
+        <div class="slider-group">
+          <label class="slider-label">
+            <span>Grain/Noise Amount</span>
+            <span class="slider-value" id="grain-value">0%</span>
+          </label>
+          <input type="range" id="grain-slider" min="0" max="30" value="0" class="slider">
+        </div>
+      </section>
+      
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button class="btn-primary" id="save-theme">💾 Save Theme</button>
+      <button class="btn-secondary" id="reset-theme">🔄 Reset to Defaults</button>
+      <button class="btn-secondary" id="export-theme">📤 Export Theme</button>
+      <button class="btn-secondary" id="import-theme">📥 Import Theme</button>
+      <input type="file" id="import-file" accept=".json" hidden>
+    </div>
+    
+    <!-- Scenery Canvas (for animated backgrounds) -->
+    <canvas id="scenery-canvas" class="scenery-canvas"></canvas>
+  </div>
+  
+  <script src="theme.js"></script>
+</body>
+</html>
