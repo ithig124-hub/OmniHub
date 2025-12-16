@@ -179,28 +179,35 @@ function initMap() {
     
     console.log('🌍 Creating map instance...');
     
-    // Initialize map
+    // Initialize map with Perth, Australia
     map = new ol.Map({
       target: 'map',
       layers: [streetLayer, satelliteLayer, vectorLayer, routeLayer],
       view: new ol.View({
         center: ol.proj.fromLonLat(MAP_CONFIG.initialCenter),
         zoom: MAP_CONFIG.initialZoom,
-        maxZoom: 19,
-        minZoom: 2
+        maxZoom: MAP_CONFIG.maxZoom,
+        minZoom: MAP_CONFIG.minZoom
       }),
       controls: ol.control.defaults.defaults({
         attribution: true,
         zoom: true,
         rotate: false
       }).extend([
-        new ol.control.ScaleLine()
+        new ol.control.ScaleLine(),
+        new ol.control.Zoom({
+          zoomInTipLabel: 'Zoom in',
+          zoomOutTipLabel: 'Zoom out'
+        })
       ])
     });
     
     console.log('✅ Map instance created');
-    console.log('📍 Starting location: New York City');
+    console.log('📍 Starting location: Perth, Australia');
     console.log('🔍 Zoom level:', MAP_CONFIG.initialZoom);
+    
+    // Setup location search
+    setupLocationSearch();
     
     // Mark street view as active
     document.getElementById('street-view-btn').classList.add('active');
