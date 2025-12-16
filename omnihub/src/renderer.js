@@ -187,8 +187,8 @@ function setupDirectKeyboardNavigation() {
       if (result.success) loadModule(result.index, 'prev');
     }
     
-    // Number keys 1-6 for direct module access
-    if (e.key >= '1' && e.key <= '6' && !e.ctrlKey && !e.altKey) {
+    // Number keys 1-7 for direct module access
+    if (e.key >= '1' && e.key <= '7' && !e.ctrlKey && !e.altKey) {
       const idx = parseInt(e.key) - 1;
       if (idx < MODULES.length && idx !== navigationController.getCurrentIndex()) {
         const result = navigationController.jumpTo(idx);
