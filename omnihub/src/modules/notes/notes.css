@@ -540,11 +540,12 @@ body {
     opacity: 1;
 }
 
-/* ===== Editor Content ===== */
+/* ===== Editor Content - Notion Style ===== */
 .editor-content {
     flex: 1;
-    padding: 30px;
+    padding: 0 80px 60px;
     overflow-y: auto;
+    max-width: 900px;
 }
 
 #note-editor {
@@ -552,16 +553,22 @@ body {
     height: 100%;
     background: transparent;
     border: none;
-    color: white;
+    color: var(--text-primary);
     font-size: 16px;
-    line-height: 1.8;
+    line-height: 1.75;
     font-family: inherit;
     outline: none;
     resize: none;
+    caret-color: var(--accent-color);
 }
 
 #note-editor::placeholder {
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--text-muted);
+}
+
+/* Selection styling */
+#note-editor::selection {
+    background: rgba(35, 131, 226, 0.3);
 }
 
 /* ===== Backlinks Panel ===== */
