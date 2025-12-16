@@ -710,6 +710,116 @@ window.mapModule = {
   }
 };
 
+// =======================
+// LOCATION SEARCH
+// =======================
+let searchTimeout = null;
+
+function setupLocationSearch() {
+  const searchInput = document.getElementById('location-search');
+  const searchBtn = document.getElementById('search-btn');
+  const searchResults = document.getElementById('search-results');
+  
+  if (!searchInput || !searchBtn) {
+    console.warn('⚠️ Search elements not found');
+    return;
+  }
+  
+  // Search on button click
+  searchBtn.addEventListener('click', () => {
+    performLocationSearch(searchInput.value);
+  });
+  
+  // Search on Enter key
+  searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      performLocationSearch(searchInput.value);
+    }
+  });
+  
+  // Live search with debounce
+  searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    const query = searchInput.value.trim();
+    
+    if (query.length < 3) {
+      searchResults.classList.add('hidden');
+      return;
+    }
+    
+    searchTimeout = setTimeout(() => {
+      performLocationSearch(query);
+    }, 500);
+  });
+  
+  // Close results when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-panel')) {
+      searchResults.classList.add('hidden');
+    }
+  });
+  
+  console.log('🔍 Location search initialized');
+}
+
+async function performLocationSearch(query) {
+  if (!query || query.trim().length < 2) return;
+  
+  const searchResults = document.getElementById('search-results');
+  
+  try {
+    const url = `${MAP_CONFIG.nominatimUrl}/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`;
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'OmniHub-Map/1.0' }
+    });
+    
+    const results = await response.json();
+    
+    if (results.length === 0) {
+      searchResults.innerHTML = '<div class="search-result-item"><div class="result-name">No results found</div></div>';
+      searchResults.classList.remove('hidden');
+      return;
+    }
+    
+    searchResults.innerHTML = '';
+    results.forEach(result => {
+      const item = document.createElement('div');
+      item.className = 'search-result-item';
+      item.innerHTML = `
+        <div class="result-name">${result.display_name.split(',')[0]}</div>
+        <div class="result-address">${result.display_name}</div>
+      `;
+      
+      item.addEventListener('click', () => {
+        goToLocation(parseFloat(result.lon), parseFloat(result.lat), result.display_name);
+        searchResults.classList.add('hidden');
+        document.getElementById('location-search').value = result.display_name.split(',')[0];
+      });
+      
+      searchResults.appendChild(item);
+    });
+    
+    searchResults.classList.remove('hidden');
+  } catch (error) {
+    console.error('Search error:', error);
+    searchResults.innerHTML = '<div class="search-result-item"><div class="result-name">Search failed</div></div>';
+    searchResults.classList.remove('hidden');
+  }
+}
+
+function goToLocation(lon, lat, name) {
+  if (!map) return;
+  
+  const view = map.getView();
+  view.animate({
+    center: ol.proj.fromLonLat([lon, lat]),
+    zoom: 14,
+    duration: 1000
+  });
+  
+  console.log(`📍 Navigated to: ${name}`);
+}
+
 // Auto-initialize
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => initModule());
@@ -719,5 +829,5 @@ if (document.readyState === 'loading') {
 
 // Export for module systems
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { initModule, getPinsData };
+  module.exports = { initModule, getPinsData, goToLocation };
 }
