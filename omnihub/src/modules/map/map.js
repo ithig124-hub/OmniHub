@@ -150,6 +150,30 @@ function initMap() {
     });
     console.log('✅ Satellite layer created');
     
+    // Create terrain layer (Stamen Terrain)
+    terrainLayer = new ol.layer.Tile({
+      source: new ol.source.XYZ({
+        url: 'https://stamen-tiles-{a-d}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png',
+        maxZoom: 18,
+        crossOrigin: 'anonymous'
+      }),
+      visible: false,
+      preload: 0
+    });
+    console.log('✅ Terrain layer created');
+    
+    // Create hybrid layer (Satellite with labels)
+    hybridLayer = new ol.layer.Tile({
+      source: new ol.source.XYZ({
+        url: 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+        maxZoom: 20,
+        crossOrigin: 'anonymous'
+      }),
+      visible: false,
+      preload: 0
+    });
+    console.log('✅ Hybrid layer created');
+    
     // Create vector source and layer for pins
     vectorSource = new ol.source.Vector();
     vectorLayer = new ol.layer.Vector({
