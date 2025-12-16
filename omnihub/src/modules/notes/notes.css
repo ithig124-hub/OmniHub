@@ -41,37 +41,37 @@ body {
     background: var(--bg-primary);
 }
 
-/* ===== Frosted Glass Effects ===== */
+/* ===== Glass Effects (Subtle) ===== */
 .glass {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
 }
 
-/* ===== Sidebar ===== */
+/* ===== Sidebar - Notion Style ===== */
 .sidebar {
-    width: 300px;
-    background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-right: 1px solid rgba(255, 255, 255, 0.18);
+    width: 260px;
+    min-width: 260px;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    transition: width 0.2s ease;
 }
 
 .sidebar-header {
-    padding: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .sidebar-header h2 {
-    color: white;
-    font-size: 24px;
+    color: var(--text-secondary);
+    font-size: 12px;
     font-weight: 600;
-    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
 }
 
 /* ===== Button Group ===== */
