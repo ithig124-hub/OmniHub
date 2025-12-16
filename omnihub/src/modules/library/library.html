@@ -743,8 +743,51 @@
     
     document.getElementById('close-pdf-viewer')?.addEventListener('click', closeViewer);
     
+    // DataStore Sync
+    function syncLibraryToDataStore() {
+      const dataStore = window.parent?.OmniHubDataStore || window.OmniHubDataStore;
+      if (!dataStore) return;
+      
+      try {
+        dataStore.setModuleData('library', {
+          books: myLibrary,
+          favorites: favorites,
+          readingProgress: {}
+        });
+        console.log(`📦 Synced ${myLibrary.length} books to DataStore`);
+      } catch (e) {
+        console.warn('⚠️ DataStore sync failed:', e);
+      }
+    }
+    
+    // Sync after adding/removing books
+    const originalToggleLibrary = toggleLibrary;
+    toggleLibrary = function(identifier, btn) {
+      originalToggleLibrary(identifier, btn);
+      syncLibraryToDataStore();
+    };
+    
+    const originalToggleFavorite = toggleFavorite;
+    toggleFavorite = function(identifier, btn) {
+      originalToggleFavorite(identifier, btn);
+      syncLibraryToDataStore();
+    };
+    
+    // Module lifecycle
+    window.libraryModule = {
+      onActivate: () => {
+        console.log('📚 Library module activated');
+        renderMyLibrary();
+        syncLibraryToDataStore();
+      },
+      onDeactivate: () => {
+        console.log('📚 Library module deactivated');
+      }
+    };
+    
     // Initialize
     renderMyLibrary();
+    syncLibraryToDataStore();
     console.log('📚 Library module loaded with Internet Archive integration');
     console.log('✅ All event listeners attached');
   </script>
