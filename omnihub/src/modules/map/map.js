@@ -228,6 +228,14 @@ function initMap() {
       }
     });
     
+    // Spacebar to add pin at current cursor position
+    document.addEventListener('keydown', function(e) {
+      if (e.code === 'Space' && !e.target.matches('input, textarea')) {
+        e.preventDefault();
+        addPinAtCursor();
+      }
+    });
+    
     // Log when map is fully loaded
     map.once('postrender', function() {
       console.log('🎨 Map fully rendered!');
