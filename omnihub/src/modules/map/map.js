@@ -208,7 +208,7 @@ function initMap() {
     // Initialize map with Perth, Australia
     map = new ol.Map({
       target: 'map',
-      layers: [streetLayer, satelliteLayer, vectorLayer, routeLayer],
+      layers: [streetLayer, satelliteLayer, terrainLayer, hybridLayer, vectorLayer, routeLayer],
       view: new ol.View({
         center: ol.proj.fromLonLat(MAP_CONFIG.initialCenter),
         zoom: MAP_CONFIG.initialZoom,
