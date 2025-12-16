@@ -417,6 +417,9 @@ function toggleWeatherLayer() {
 // PIN MANAGEMENT
 // =======================
 
+// Track cursor position
+let cursorCoords = null;
+
 function addPinAtCenter() {
   const center = map.getView().getCenter();
   const coords = ol.proj.toLonLat(center);
@@ -424,6 +427,21 @@ function addPinAtCenter() {
   tempPinCoords = { lat: coords[1], lon: coords[0] };
   console.log('📍 Adding pin at:', tempPinCoords);
   showPinModal();
+}
+
+// Add pin at cursor position (spacebar)
+function addPinAtCursor() {
+  if (!cursorCoords) {
+    // Fallback to center if no cursor position
+    addPinAtCenter();
+    return;
+  }
+  
+  tempPinCoords = { lat: cursorCoords[1], lon: cursorCoords[0] };
+  console.log('📍 Spacebar - Adding pin at cursor:', tempPinCoords);
+  
+  // Show quick pin info panel with all location data
+  showQuickPinInfo(tempPinCoords);
 }
 
 function showPinModal() {
