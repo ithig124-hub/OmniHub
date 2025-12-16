@@ -47,6 +47,7 @@ let moduleContainer;
 let navBar;
 let moduleTitle;
 let moduleSelector;
+let moduleDropdown;
 
 // =======================
 // INITIALIZATION
@@ -60,12 +61,14 @@ function init() {
     navBar = document.getElementById('nav-bar');
     moduleTitle = document.getElementById('module-title');
     moduleSelector = document.getElementById('module-selector');
+    moduleDropdown = document.getElementById('module-dropdown');
     
     console.log('📍 DOM Elements found:', {
       moduleContainer: !!moduleContainer,
       navBar: !!navBar,
       moduleTitle: !!moduleTitle,
-      moduleSelector: !!moduleSelector
+      moduleSelector: !!moduleSelector,
+      moduleDropdown: !!moduleDropdown
     });
     
     // Initialize loading controller FIRST (it's already showing)
@@ -95,9 +98,11 @@ function init() {
     // Setup event listeners
     setupNavigationEvents();
     
-    // Create navigation UI
+    // Create navigation UI (dropdown + hidden nav bar for compatibility)
     createNavigationBar();
+    createModuleDropdown();
     createModuleSelector();
+    setupHeaderTime();
     
     // Setup direct keyboard navigation (fallback)
     setupDirectKeyboardNavigation();
