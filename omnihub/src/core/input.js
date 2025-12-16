@@ -57,7 +57,13 @@ class InputHandler {
     if (!isNaN(key) && key >= '1' && key <= '6') {
       const moduleIndex = parseInt(key) - 1;
       if (moduleIndex < this.nav.modules.length) {
-        this.nav.jumpTo(moduleIndex);
+        const module = this.nav.modules[moduleIndex];
+        // Use OmniHub API to navigate (which triggers loadModule)
+        if (window.OmniHub && window.OmniHub.navigateToModule) {
+          window.OmniHub.navigateToModule(module.id);
+        } else {
+          this.nav.jumpTo(moduleIndex);
+        }
         this.showNavigationFeedback('jump');
       }
       return;
