@@ -176,12 +176,22 @@ class InputHandler {
       if (deltaX > 0) {
         // Swipe right - previous module
         console.log('👉 Swipe Right: Previous');
-        this.nav.previous();
+        // Use OmniHub API to navigate (which triggers loadModule)
+        if (window.OmniHub && window.OmniHub.previous) {
+          window.OmniHub.previous();
+        } else {
+          this.nav.previous();
+        }
         this.showNavigationFeedback('prev');
       } else {
         // Swipe left - next module
         console.log('👈 Swipe Left: Next');
-        this.nav.next();
+        // Use OmniHub API to navigate (which triggers loadModule)
+        if (window.OmniHub && window.OmniHub.next) {
+          window.OmniHub.next();
+        } else {
+          this.nav.next();
+        }
         this.showNavigationFeedback('next');
       }
     }
