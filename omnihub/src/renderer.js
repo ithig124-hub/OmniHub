@@ -201,8 +201,17 @@ function loadModule(index, direction = 'next') {
   
   console.log(`🔄 Loading module: ${module.name} (${index}) [${direction}]`);
   
-  // Show loading
-  showLoading(module.name);
+  // Show loading using centralized controller
+  if (loadingController) {
+    loadingController.show(module.name);
+    
+    // Register callback for when module signals ready
+    loadingController.registerModuleReadyCallback(module.id, () => {
+      console.log(`📣 Module ${module.name} signaled ready`);
+      navigationController.completeTransition();
+      updateUI(module, index);
+    });
+  }
   
   // Fetch module HTML with timeout to prevent hanging
   const fetchWithTimeout = (url, timeout = 5000) => {
@@ -233,6 +242,7 @@ function loadModule(index, direction = 'next') {
     })
     .catch(error => {
       console.error('❌ Module loading error:', error);
+      loadingController?.forceHide();
       showError(`Failed to load ${module.name}`, error.message);
       navigationController.isTransitioning = false;
     });
