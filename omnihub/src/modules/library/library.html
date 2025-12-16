@@ -544,27 +544,31 @@
       searchResults.className = 'books-list';
     });
     
-    // Search Internet Archive
+    // Search state
+    let allSearchResults = [];
+    let displayedCount = 0;
+    const RESULTS_PER_PAGE = 5;
+    
+    // Search Internet Archive - PDF Only
     async function searchBooks(query) {
       if (!query.trim() || isSearching) return;
       
       isSearching = true;
-      searchStatus.textContent = 'Searching Internet Archive...';
-      searchResults.innerHTML = '<div class="loading-spinner">🔄 Searching...</div>';
+      displayedCount = 0;
+      allSearchResults = [];
+      searchStatus.textContent = 'Searching for PDFs...';
+      searchResults.innerHTML = '<div class="loading-spinner">🔄 Searching PDF documents...</div>';
       
-      console.log('🔍 Searching for:', query);
+      console.log('🔍 Searching PDFs for:', query);
       
       try {
-        const filterType = document.getElementById('filter-type')?.value || 'all';
         const sortBy = document.getElementById('sort-by')?.value || 'relevance';
         
-        let searchQuery = query;
-        if (filterType !== 'all') {
-          searchQuery += ` AND mediatype:${filterType}`;
-        }
+        // Search specifically for PDFs
+        const searchQuery = `${query} AND format:(PDF)`;
         
         const sortParam = sortBy === 'date' ? 'date' : sortBy === 'downloads' ? 'downloads' : '';
-        const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(searchQuery)}&fl[]=identifier&fl[]=title&fl[]=creator&fl[]=description&fl[]=year&fl[]=mediatype&fl[]=downloads&rows=30&page=1&output=json${sortParam ? '&sort[]=' + sortParam + ' desc' : ''}`;
+        const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(searchQuery)}&fl[]=identifier&fl[]=title&fl[]=creator&fl[]=description&fl[]=year&fl[]=mediatype&fl[]=downloads&fl[]=format&rows=50&page=1&output=json${sortParam ? '&sort[]=' + sortParam + ' desc' : ''}`;
         
         console.log('📡 API URL:', url);
         
@@ -574,11 +578,18 @@
         console.log('📦 API Response:', data);
         
         if (data.response && data.response.docs && data.response.docs.length > 0) {
-          searchStatus.textContent = `Found ${data.response.numFound.toLocaleString()} results`;
-          renderSearchResults(data.response.docs);
+          allSearchResults = data.response.docs;
+          searchStatus.innerHTML = `<span style="color: #10b981; font-weight: 600;">📄 Found ${data.response.numFound.toLocaleString()} PDF documents</span>`;
+          renderSearchResults(allSearchResults.slice(0, RESULTS_PER_PAGE));
+          displayedCount = Math.min(RESULTS_PER_PAGE, allSearchResults.length);
+          
+          // Add load more button if there are more results
+          if (allSearchResults.length > RESULTS_PER_PAGE) {
+            addLoadMoreButton();
+          }
         } else {
-          searchStatus.textContent = 'No results found. Try different keywords.';
-          searchResults.innerHTML = '<div class="no-results">📚 No books found. Try different search terms.</div>';
+          searchStatus.textContent = 'No PDF documents found. Try different keywords.';
+          searchResults.innerHTML = '<div class="no-results">📄 No PDFs found. Try different search terms.</div>';
         }
       } catch (error) {
         console.error('Search error:', error);
@@ -587,6 +598,78 @@
       }
       
       isSearching = false;
+    }
+    
+    function addLoadMoreButton() {
+      const remaining = allSearchResults.length - displayedCount;
+      if (remaining <= 0) return;
+      
+      const loadMoreDiv = document.createElement('div');
+      loadMoreDiv.id = 'load-more-container';
+      loadMoreDiv.style.cssText = 'text-align: center; padding: 20px; grid-column: 1 / -1;';
+      loadMoreDiv.innerHTML = `
+        <button id="load-more-btn" style="
+          padding: 14px 32px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border: none;
+          border-radius: 12px;
+          color: white;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        ">
+          📄 Load More (${remaining} remaining)
+        </button>
+      `;
+      searchResults.appendChild(loadMoreDiv);
+      
+      document.getElementById('load-more-btn').addEventListener('click', loadMoreResults);
+    }
+    
+    function loadMoreResults() {
+      const loadMoreContainer = document.getElementById('load-more-container');
+      if (loadMoreContainer) loadMoreContainer.remove();
+      
+      const nextBatch = allSearchResults.slice(displayedCount, displayedCount + RESULTS_PER_PAGE);
+      displayedCount += nextBatch.length;
+      
+      nextBatch.forEach(book => {
+        const card = createResultCard(book);
+        searchResults.appendChild(card);
+      });
+      
+      // Add load more button again if there are more
+      if (displayedCount < allSearchResults.length) {
+        addLoadMoreButton();
+      }
+    }
+    
+    function createResultCard(book) {
+      const card = document.createElement('div');
+      card.className = 'book-card';
+      
+      const isInLibrary = myLibrary.some(b => b.identifier === book.identifier);
+      const isFavorite = favorites.some(b => b.identifier === book.identifier);
+      
+      card.innerHTML = `
+        <div class="book-cover">
+          <img src="https://archive.org/services/img/${book.identifier}" alt="${book.title}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 150%22><rect fill=%22%23667eea%22 width=%22100%22 height=%22150%22/><text x=%2250%22 y=%2275%22 fill=%22white%22 text-anchor=%22middle%22 font-size=%2240%22>📄</text></svg>'">
+          <div class="pdf-badge">PDF</div>
+        </div>
+        <div class="book-title">${book.title || 'Untitled'}</div>
+        <div class="book-author">${book.creator || 'Unknown Author'}</div>
+        <div class="book-year">${book.year || ''}</div>
+        <div class="book-actions">
+          <button class="book-btn read-btn" onclick="openBook('${book.identifier}', '${(book.title || '').replace(/'/g, "\\'")}')">📖 Read</button>
+          <button class="book-btn ${isInLibrary ? 'added' : ''}" onclick="toggleLibrary('${book.identifier}', this)" title="${isInLibrary ? 'Remove from Library' : 'Add to Library'}">${isInLibrary ? '✓' : '+'}</button>
+          <button class="book-btn ${isFavorite ? 'favorited' : ''}" onclick="toggleFavorite('${book.identifier}', this)" title="${isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}">${isFavorite ? '❤️' : '🤍'}</button>
+        </div>
+      `;
+      
+      card.dataset.book = JSON.stringify(book);
+      return card;
     }
     
     function renderSearchResults(books) {
