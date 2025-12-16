@@ -666,6 +666,14 @@ function updateUIFromSettings() {
     btn.classList.toggle('active', btn.dataset.scenery === themeSettings.scenery);
   });
   
+  // Update video scenery buttons
+  document.querySelectorAll('.video-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.video === themeSettings.videoScenery);
+  });
+  
+  // Update video opacity slider
+  updateSlider('video-opacity-slider', 'video-opacity-value', themeSettings.videoOpacity, '%');
+  
   // Update toggles
   const ambientToggle = document.getElementById('ambient-sound-toggle');
   if (ambientToggle) ambientToggle.checked = themeSettings.ambientSound;
@@ -675,6 +683,9 @@ function updateUIFromSettings() {
   
   const smoothToggle = document.getElementById('smooth-transitions-toggle');
   if (smoothToggle) smoothToggle.checked = themeSettings.smoothTransitions;
+  
+  const videoDimToggle = document.getElementById('video-dim-toggle');
+  if (videoDimToggle) videoDimToggle.checked = themeSettings.videoDim;
   
   // Update wallpaper clear button
   document.getElementById('clear-wallpaper').style.display = themeSettings.customWallpaper ? 'block' : 'none';
