@@ -343,21 +343,42 @@ function setupEventListeners() {
 // =======================
 
 function switchLayer(layerType) {
-  if (layerType === 'street') {
-    streetLayer.setVisible(true);
-    satelliteLayer.setVisible(false);
-    currentLayer = 'street';
-    document.getElementById('street-view-btn').classList.add('active');
-    document.getElementById('satellite-view-btn').classList.remove('active');
-    console.log('🗺️ Switched to Street View');
-  } else if (layerType === 'satellite') {
-    streetLayer.setVisible(false);
-    satelliteLayer.setVisible(true);
-    currentLayer = 'satellite';
-    document.getElementById('satellite-view-btn').classList.add('active');
-    document.getElementById('street-view-btn').classList.remove('active');
-    console.log('🛰️ Switched to Satellite View');
+  // Hide all base layers
+  streetLayer.setVisible(false);
+  satelliteLayer.setVisible(false);
+  terrainLayer.setVisible(false);
+  hybridLayer.setVisible(false);
+  
+  // Remove active class from all buttons
+  document.querySelectorAll('.control-btn[data-layer]').forEach(btn => btn.classList.remove('active'));
+  document.getElementById('street-view-btn')?.classList.remove('active');
+  document.getElementById('satellite-view-btn')?.classList.remove('active');
+  
+  // Show selected layer
+  switch(layerType) {
+    case 'street':
+      streetLayer.setVisible(true);
+      document.getElementById('street-view-btn')?.classList.add('active');
+      console.log('🗺️ Switched to Street View');
+      break;
+    case 'satellite':
+      satelliteLayer.setVisible(true);
+      document.getElementById('satellite-view-btn')?.classList.add('active');
+      console.log('🛰️ Switched to Satellite View');
+      break;
+    case 'terrain':
+      terrainLayer.setVisible(true);
+      document.querySelector('[data-layer="terrain"]')?.classList.add('active');
+      console.log('🏔️ Switched to Terrain View');
+      break;
+    case 'hybrid':
+      hybridLayer.setVisible(true);
+      document.querySelector('[data-layer="hybrid"]')?.classList.add('active');
+      console.log('🌍 Switched to Hybrid View');
+      break;
   }
+  
+  currentLayer = layerType;
 }
 
 // =======================
