@@ -452,6 +452,52 @@ function showPinModal() {
   document.getElementById('pin-name').focus();
 }
 
+// Quick pin info with auto-populated data
+async function showQuickPinInfo(coords) {
+  const modal = document.getElementById('pin-modal');
+  const nameInput = document.getElementById('pin-name');
+  const descInput = document.getElementById('pin-description');
+  
+  modal.classList.add('active');
+  
+  // Show coordinates immediately
+  nameInput.value = 'Loading location...';
+  descInput.value = `📍 Coordinates: ${coords.lat.toFixed(6)}, ${coords.lon.toFixed(6)}\n📏 Altitude: Fetching...\n🌍 Location: Fetching...`;
+  
+  // Fetch location details
+  try {
+    const url = `${MAP_CONFIG.nominatimUrl}/reverse?format=json&lat=${coords.lat}&lon=${coords.lon}&zoom=18&addressdetails=1`;
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'OmniHub Map Module' }
+    });
+    const data = await response.json();
+    
+    if (data.display_name) {
+      // Auto-populate with location name
+      const shortName = data.display_name.split(',')[0];
+      nameInput.value = shortName;
+      
+      // Build detailed description
+      const address = data.address || {};
+      let details = `📍 Coordinates: ${coords.lat.toFixed(6)}, ${coords.lon.toFixed(6)}\n`;
+      details += `🌍 Location: ${data.display_name}\n`;
+      if (address.road) details += `🛣️ Road: ${address.road}\n`;
+      if (address.city || address.town || address.village) details += `🏙️ City: ${address.city || address.town || address.village}\n`;
+      if (address.state) details += `🗺️ State: ${address.state}\n`;
+      if (address.country) details += `🌐 Country: ${address.country}\n`;
+      if (address.postcode) details += `📮 Postcode: ${address.postcode}`;
+      
+      descInput.value = details;
+    }
+  } catch (e) {
+    console.error('Quick pin fetch error:', e);
+    descInput.value = `📍 Coordinates: ${coords.lat.toFixed(6)}, ${coords.lon.toFixed(6)}\n(Location details unavailable)`;
+  }
+  
+  nameInput.focus();
+  nameInput.select();
+}
+
 function closePinModal() {
   document.getElementById('pin-modal').classList.remove('active');
   tempPinCoords = null;
