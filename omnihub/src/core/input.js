@@ -293,7 +293,10 @@ class InputHandler {
   }
 }
 
-// Export for use in other modules
+// Expose to window for browser use
+window.InputHandler = InputHandler;
+
+// Export for use in other modules (CommonJS)
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = InputHandler;
 }

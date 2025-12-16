@@ -241,7 +241,10 @@ class NavigationController {
   }
 }
 
-// Export for use in other modules
+// Expose to window for browser use
+window.NavigationController = NavigationController;
+
+// Export for use in other modules (CommonJS)
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = NavigationController;
 }
