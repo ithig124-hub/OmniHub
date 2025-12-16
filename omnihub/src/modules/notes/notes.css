@@ -215,7 +215,7 @@ body {
 .tab-content {
     flex: 1;
     overflow-y: auto;
-    padding: 15px 20px;
+    padding: 8px;
 }
 
 .tab-pane {
@@ -226,53 +226,59 @@ body {
     display: block;
 }
 
-/* ===== Notes Tree ===== */
+/* ===== Notes Tree - Notion Style ===== */
 .notes-tree {
-    color: white;
+    color: var(--text-secondary);
 }
 
 .tree-item {
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .tree-node {
-    padding: 8px 12px;
-    border-radius: 6px;
+    padding: 6px 10px;
+    border-radius: 4px;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
-    transition: all 0.2s ease;
-    color: rgba(255, 255, 255, 0.85);
+    gap: 6px;
+    transition: background 0.1s ease;
+    color: var(--text-secondary);
+    font-size: 13px;
 }
 
 .tree-node:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--bg-hover);
 }
 
 .tree-node.active {
-    background: rgba(255, 255, 255, 0.25);
-    color: white;
-    font-weight: 500;
+    background: var(--bg-active);
+    color: var(--text-primary);
 }
 
 .tree-node.pinned {
-    color: #fbbf24;
+    color: var(--yellow-accent);
 }
 
 .tree-toggle {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: 10px;
     cursor: pointer;
+    border-radius: 3px;
+    color: var(--text-muted);
+}
+
+.tree-toggle:hover {
+    background: var(--bg-active);
 }
 
 .tree-children {
-    margin-left: 20px;
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    margin-left: 12px;
+    border-left: 1px solid var(--border-color);
     padding-left: 8px;
 }
 
