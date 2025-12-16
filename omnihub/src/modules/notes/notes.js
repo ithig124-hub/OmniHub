@@ -905,6 +905,39 @@ class NotesUI {
     }
 }
 
+// ===== DataStore Integration =====
+function syncNotesToDataStore() {
+    // Check if DataStore is available (from parent window or global)
+    const dataStore = window.parent?.OmniHubDataStore || window.OmniHubDataStore;
+    
+    if (!dataStore || !notesManager) {
+        console.log('📦 DataStore not available for sync');
+        return;
+    }
+    
+    try {
+        // Transform notes for DataStore format
+        const notesData = {
+            items: notesManager.notes.map(note => ({
+                id: note.id,
+                title: note.title,
+                content: note.content,
+                tags: note.tags,
+                pinned: note.pinned,
+                created: note.created,
+                modified: note.modified
+            })),
+            tags: notesManager.getAllTags().map(t => t.tag),
+            lastModified: new Date().toISOString()
+        };
+        
+        dataStore.setModuleData('notes', notesData);
+        console.log(`📦 Synced ${notesData.items.length} notes to DataStore`);
+    } catch (e) {
+        console.warn('⚠️ Failed to sync notes to DataStore:', e);
+    }
+}
+
 // ===== Module Initialization =====
 let notesManager;
 let notesUI;
@@ -919,6 +952,9 @@ async function initModule(container) {
         notesUI = new NotesUI(notesManager);
         notesUI.init();
     }
+    
+    // Initial sync to DataStore
+    syncNotesToDataStore();
 
     return {
         manager: notesManager,
