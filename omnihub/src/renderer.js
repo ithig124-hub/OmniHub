@@ -5,17 +5,19 @@
 
 console.log('🚀 OmniHub Renderer Starting (Enhanced)...');
 
-// Load core navigation system
+// Load core systems
 let NavigationController;
 let InputHandler;
+let LoadingController;
 
 // Check if we're in a module system environment
 if (typeof require !== 'undefined') {
   try {
     NavigationController = require('./core/navigation.js');
     InputHandler = require('./core/input.js');
+    LoadingController = require('./core/loading.js');
   } catch (e) {
-    console.log('Loading navigation system via script tags...');
+    console.log('Loading core systems via script tags...');
   }
 }
 
@@ -36,6 +38,7 @@ const MODULES = [
 // =======================
 let navigationController;
 let inputHandler;
+let loadingController;
 
 // =======================
 // DOM ELEMENTS
@@ -43,7 +46,6 @@ let inputHandler;
 let moduleContainer;
 let navBar;
 let moduleTitle;
-let loadingScreen;
 let moduleSelector;
 
 // =======================
