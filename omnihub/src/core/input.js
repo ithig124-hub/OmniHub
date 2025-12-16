@@ -193,7 +193,13 @@ class InputHandler {
       const moduleId = e.target.value;
       if (moduleId) {
         console.log('📍 Selector jump to:', moduleId);
-        this.nav.jumpTo(moduleId);
+        // Use OmniHub API to navigate (which triggers loadModule)
+        if (window.OmniHub && window.OmniHub.navigateToModule) {
+          window.OmniHub.navigateToModule(moduleId);
+        } else {
+          // Fallback to direct navigation
+          this.nav.jumpTo(moduleId);
+        }
         this.showNavigationFeedback('jump');
       }
     });
