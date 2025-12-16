@@ -459,25 +459,26 @@ body {
     opacity: 1;
 }
 
-/* ===== Metadata Bar ===== */
+/* ===== Metadata Bar - Notion Style ===== */
 .metadata-bar {
-    padding: 12px 30px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 80px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 12px;
+    border-bottom: none;
 }
 
 .metadata-left {
     display: flex;
-    gap: 20px;
+    gap: 16px;
 }
 
 .metadata-item {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
 }
 
 .metadata-right {
@@ -488,44 +489,51 @@ body {
 .tags-input-container {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 .tags-input {
-    padding: 6px 12px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 6px;
-    color: white;
-    font-size: 13px;
+    padding: 4px 8px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 0;
+    color: var(--text-secondary);
+    font-size: 12px;
     outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.tags-input:focus {
+    border-color: var(--accent-color);
 }
 
 .tags-input::placeholder {
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--text-muted);
 }
 
 .tags-display {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 4px;
 }
 
 .tag-chip {
-    padding: 4px 10px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    color: white;
-    font-size: 12px;
+    padding: 2px 8px;
+    background: rgba(35, 131, 226, 0.15);
+    border-radius: 3px;
+    color: var(--accent-color);
+    font-size: 11px;
+    font-weight: 500;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
 }
 
 .tag-chip-remove {
     cursor: pointer;
-    font-weight: bold;
-    opacity: 0.7;
+    opacity: 0.6;
+    font-size: 10px;
 }
 
 .tag-chip-remove:hover {
