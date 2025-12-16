@@ -428,5 +428,91 @@
   
   <!-- Renderer Script -->
   <script src="./renderer.js"></script>
+  
+  <!-- Inline fallback if renderer.js fails -->
+  <script>
+    // Backup initialization - runs if renderer.js didn't initialize properly
+    setTimeout(function() {
+      var navBar = document.getElementById('nav-bar');
+      var selector = document.getElementById('module-selector');
+      var container = document.getElementById('module-container');
+      
+      // If nav bar is empty, external scripts didn't load - initialize manually
+      if (navBar && navBar.children.length === 0) {
+        console.warn('⚠️ External scripts failed - using inline backup');
+        
+        var modules = [
+          { id: 'map', name: 'Map', icon: '🗺️', path: './modules/map/map.html' },
+          { id: 'notes', name: 'Notes', icon: '📝', path: './modules/notes/notes.html' },
+          { id: 'library', name: 'Library', icon: '📚', path: './modules/library/library.html' },
+          { id: 'search', name: 'Search', icon: '🔍', path: './modules/search/search.html' },
+          { id: 'dashboard', name: 'Dashboard', icon: '📊', path: './modules/dashboard/dashboard.html' },
+          { id: 'tracking', name: 'Tracking', icon: '📍', path: './modules/tracking/tracking.html' }
+        ];
+        
+        var currentIndex = 1; // Start with Notes
+        
+        // Create nav buttons
+        modules.forEach(function(mod, idx) {
+          var btn = document.createElement('button');
+          btn.className = 'nav-btn' + (idx === currentIndex ? ' active' : '');
+          btn.innerHTML = '<span class="nav-icon">' + mod.icon + '</span><span class="nav-label">' + mod.name + '</span>';
+          btn.onclick = function() { loadMod(idx); };
+          navBar.appendChild(btn);
+        });
+        
+        // Create selector options
+        if (selector) {
+          modules.forEach(function(mod, idx) {
+            var opt = document.createElement('option');
+            opt.value = mod.id;
+            opt.textContent = mod.icon + ' ' + mod.name;
+            if (idx === currentIndex) opt.selected = true;
+            selector.appendChild(opt);
+          });
+          selector.onchange = function() {
+            var idx = modules.findIndex(function(m) { return m.id === selector.value; });
+            if (idx !== -1) loadMod(idx);
+          };
+        }
+        
+        // Load module function
+        function loadMod(idx) {
+          currentIndex = idx;
+          var mod = modules[idx];
+          
+          // Update title
+          var title = document.getElementById('module-title');
+          if (title) title.textContent = mod.icon + ' ' + mod.name;
+          
+          // Update nav buttons
+          var btns = navBar.querySelectorAll('.nav-btn');
+          btns.forEach(function(b, i) {
+            b.className = 'nav-btn' + (i === idx ? ' active' : '');
+          });
+          
+          // Update selector
+          if (selector) selector.value = mod.id;
+          
+          // Load iframe
+          var oldIframe = container.querySelector('iframe');
+          if (oldIframe) oldIframe.remove();
+          
+          var iframe = document.createElement('iframe');
+          iframe.className = 'module-iframe';
+          iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:none;';
+          iframe.src = mod.path;
+          container.appendChild(iframe);
+          
+          // Hide loading
+          var ls = document.getElementById('loading-screen');
+          if (ls) ls.style.display = 'none';
+        }
+        
+        // Load initial module
+        loadMod(currentIndex);
+      }
+    }, 1500);
+  </script>
 </body>
 </html>
