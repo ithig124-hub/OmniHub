@@ -347,7 +347,7 @@ function reverseGeocode(lat, lon) {
   const addressDisplay = document.getElementById('address-display');
   addressDisplay.textContent = 'Loading address...';
   
-  const url = `${MAP_CONFIG.nominatimUrl}?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
+  const url = `${MAP_CONFIG.nominatimUrl}/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
   
   fetch(url, {
     headers: { 'User-Agent': 'OmniHub Map Module' }
