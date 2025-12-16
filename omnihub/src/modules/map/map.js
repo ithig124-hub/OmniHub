@@ -218,6 +218,7 @@ function initMap() {
     // Mouse move event for coordinate display
     map.on('pointermove', function(evt) {
       const coords = ol.proj.toLonLat(evt.coordinate);
+      cursorCoords = coords; // Store for spacebar pin
       updateCoordinateDisplay(coords[1], coords[0]);
     });
     
