@@ -7,7 +7,7 @@
 let WEATHER_API_KEY = '8c7560db67d91f1f14a8f0a35203c33c';
 let MAP_CONFIG = {
   initialCenter: [115.8605, -31.9505], // Perth, Australia
-  initialZoom: 10,
+  initialZoom: 12, // Bigger zoom for better initial view
   minZoom: 2,
   maxZoom: 19,
   streetTileUrl: 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
