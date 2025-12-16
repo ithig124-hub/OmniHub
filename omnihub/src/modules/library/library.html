@@ -68,21 +68,28 @@
     .search-input {
       width: 100%;
       padding: 12px 15px 12px 45px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 10px;
-      color: white;
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid rgba(102, 126, 234, 0.3);
+      border-radius: 12px;
+      color: #1a1a1a;
       font-size: 16px;
+      font-weight: 500;
       outline: none;
+      transition: all 0.3s ease;
     }
     
     .search-input::placeholder {
-      color: rgba(255, 255, 255, 0.5);
+      color: #666;
     }
     
     .search-input:focus {
-      border-color: rgba(255, 255, 255, 0.5);
-      background: rgba(255, 255, 255, 0.15);
+      border-color: #667eea;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+    }
+    
+    .search-icon {
+      color: #667eea;
     }
     
     .search-button {
