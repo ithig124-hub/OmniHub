@@ -59,8 +59,16 @@ function init() {
     moduleContainer = document.getElementById('module-container');
     navBar = document.getElementById('nav-bar');
     moduleTitle = document.getElementById('module-title');
-    loadingScreen = document.getElementById('loading-screen');
     moduleSelector = document.getElementById('module-selector');
+    
+    // Initialize loading controller FIRST (it's already showing)
+    if (typeof LoadingController !== 'undefined') {
+      loadingController = new LoadingController();
+    } else {
+      loadingController = new window.LoadingController();
+    }
+    loadingController.init();
+    loadingController.updateProgress('Initializing OmniHub...');
     
     // Initialize navigation controller
     if (typeof NavigationController !== 'undefined') {
@@ -91,6 +99,7 @@ function init() {
     console.log('✅ OmniHub Navigation Engine initialized successfully!');
   } catch (error) {
     console.error('❌ Initialization error:', error);
+    loadingController?.forceHide();
     showError('Failed to initialize OmniHub', error.message);
   }
 }
