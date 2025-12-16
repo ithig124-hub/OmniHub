@@ -23,7 +23,18 @@ const THEME_CONFIG = {
     reduceMotion: false,
     smoothTransitions: true,
     customWallpaper: null,
-    preset: null
+    preset: null,
+    videoScenery: 'none',
+    videoOpacity: 40,
+    videoDim: true
+  },
+  // Professional, clean, smooth FPV drone footage URLs (royalty-free from Pexels/Pixabay)
+  VIDEO_SOURCES: {
+    mountains: 'https://videos.pexels.com/video-files/3571264/3571264-uhd_2560_1440_30fps.mp4',
+    ocean: 'https://videos.pexels.com/video-files/1093662/1093662-uhd_2560_1440_30fps.mp4', 
+    forest: 'https://videos.pexels.com/video-files/3571265/3571265-uhd_2560_1440_30fps.mp4',
+    city: 'https://videos.pexels.com/video-files/3129671/3129671-uhd_2560_1440_30fps.mp4',
+    clouds: 'https://videos.pexels.com/video-files/857251/857251-hd_1920_1080_25fps.mp4'
   },
   GRADIENTS: {
     ocean: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #3d5ca3 100%)',
