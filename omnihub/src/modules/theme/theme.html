@@ -189,6 +189,54 @@
         </div>
       </section>
       
+      <!-- FPV Drone Video Scenery Section -->
+      <section class="settings-section glass-panel">
+        <h3 class="section-title">
+          <span>🎬</span> FPV Drone Scenery
+        </h3>
+        <p class="section-desc">Smooth, cinematic drone footage for a professional ambient background</p>
+        <div class="video-scenery-options">
+          <button class="video-btn" data-video="none">
+            <span class="video-icon">⭕</span>
+            <span class="video-name">Off</span>
+          </button>
+          <button class="video-btn" data-video="mountains">
+            <span class="video-icon">🏔️</span>
+            <span class="video-name">Mountains</span>
+          </button>
+          <button class="video-btn" data-video="ocean">
+            <span class="video-icon">🌊</span>
+            <span class="video-name">Ocean</span>
+          </button>
+          <button class="video-btn" data-video="forest">
+            <span class="video-icon">🌲</span>
+            <span class="video-name">Forest</span>
+          </button>
+          <button class="video-btn" data-video="city">
+            <span class="video-icon">🌃</span>
+            <span class="video-name">City</span>
+          </button>
+          <button class="video-btn" data-video="clouds">
+            <span class="video-icon">☁️</span>
+            <span class="video-name">Clouds</span>
+          </button>
+        </div>
+        <div class="slider-group" style="margin-top: 1rem;">
+          <label class="slider-label">
+            <span>Video Opacity</span>
+            <span class="slider-value" id="video-opacity-value">40%</span>
+          </label>
+          <input type="range" id="video-opacity-slider" min="10" max="80" value="40" class="slider">
+        </div>
+        <div class="toggle-group">
+          <label class="toggle-label">
+            <span>Dim Video (Better Readability)</span>
+            <input type="checkbox" id="video-dim-toggle" class="toggle-input" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </section>
+      
       <!-- Motion & Animation Section -->
       <section class="settings-section glass-panel">
         <h3 class="section-title">
