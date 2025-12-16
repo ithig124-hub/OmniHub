@@ -266,17 +266,49 @@ function createModuleIframe(html, module) {
   
   moduleContainer.appendChild(iframe);
   
+  // Inject module readiness helper script into HTML
+  const moduleReadyScript = `
+    <script>
+      // OmniHub Module Readiness Helper
+      window.OmniHubModule = {
+        signalReady: function() {
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: 'MODULE_READY', moduleId: '${module.id}' }, '*');
+            console.log('📨 Module ${module.id} signaled ready to parent');
+          }
+        }
+      };
+      
+      // Auto-signal ready when DOM is fully loaded (fallback)
+      if (document.readyState === 'complete') {
+        setTimeout(function() { window.OmniHubModule.signalReady(); }, 100);
+      } else {
+        window.addEventListener('load', function() {
+          setTimeout(function() { window.OmniHubModule.signalReady(); }, 100);
+        });
+      }
+    </script>
+  `;
+  
+  // Inject the readiness script before closing body tag
+  const modifiedHtml = html.replace('</body>', moduleReadyScript + '</body>');
+  
   // Write HTML to iframe
   iframe.contentDocument.open();
-  iframe.contentDocument.write(html);
+  iframe.contentDocument.write(modifiedHtml);
   iframe.contentDocument.close();
   
-  // Hide loading after iframe loads (reduced delay for faster perceived loading)
+  // Fallback: iframe onload as backup (in case module doesn't signal)
   iframe.onload = () => {
+    // Give module time to signal ready, otherwise use fallback
     setTimeout(() => {
-      hideLoading();
-      navigationController.completeTransition();
-    }, 200);
+      if (loadingController && loadingController.isLoading()) {
+        console.log(`⚡ Fallback: hiding loading for ${module.name}`);
+        loadingController.hide();
+        navigationController.completeTransition();
+        updateUI(module, navigationController.getCurrentIndex());
+      }
+    }, 500);
   };
   
   return iframe;
