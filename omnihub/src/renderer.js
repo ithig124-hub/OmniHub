@@ -204,112 +204,67 @@ function loadModule(index, direction = 'next') {
   // Show loading using centralized controller
   if (loadingController) {
     loadingController.show(module.name);
-    
-    // Register callback for when module signals ready
-    loadingController.registerModuleReadyCallback(module.id, () => {
-      console.log(`📣 Module ${module.name} signaled ready`);
-      navigationController.completeTransition();
-      updateUI(module, index);
-    });
   }
   
-  // Fetch module HTML with timeout to prevent hanging
-  const fetchWithTimeout = (url, timeout = 5000) => {
-    return Promise.race([
-      fetch(url),
-      new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Module load timeout')), timeout)
-      )
-    ]);
-  };
-  
-  // Fetch module HTML
-  fetchWithTimeout(module.path, 8000)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`Failed to load ${module.name}: ${response.statusText}`);
-      }
-      return response.text();
-    })
-    .then(html => {
-      // Create new iframe for module isolation
-      const newModule = createModuleIframe(html, module);
-      
-      // Apply transition animation based on direction
-      applyTransition(newModule, direction);
-      
-      console.log(`✅ Module loaded: ${module.name}`);
-    })
-    .catch(error => {
-      console.error('❌ Module loading error:', error);
-      loadingController?.forceHide();
-      showError(`Failed to load ${module.name}`, error.message);
-      navigationController.isTransitioning = false;
-    });
+  // Create iframe and load module directly via src
+  createModuleIframe(module, direction, index);
 }
 
-function createModuleIframe(html, module) {
+function createModuleIframe(module, direction, index) {
+  // Remove old module
+  const oldIframe = moduleContainer.querySelector('.module-iframe');
+  if (oldIframe) {
+    oldIframe.remove();
+  }
+  
   // Create iframe for module isolation
   const iframe = document.createElement('iframe');
   iframe.className = 'module-iframe hw-accelerated';
   iframe.setAttribute('data-module-id', module.id);
   iframe.setAttribute('data-testid', `module-${module.id}`);
-  iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms');
   
-  // Remove old module with exit animation
-  const oldIframe = moduleContainer.querySelector('.module-iframe');
-  if (oldIframe) {
-    // Apply exit animation to old iframe
-    const currentDirection = navigationController.getCurrent();
-    oldIframe.remove();
-  }
+  // Apply transition
+  applyTransition(iframe, direction);
   
+  // Handle iframe load
+  iframe.onload = () => {
+    console.log(`✅ Module ${module.name} iframe loaded`);
+    
+    // Hide loading after a short delay to ensure content is rendered
+    setTimeout(() => {
+      if (loadingController) {
+        loadingController.hide();
+      }
+      navigationController.completeTransition();
+      updateUI(module, index);
+    }, 200);
+  };
+  
+  // Handle iframe error
+  iframe.onerror = (error) => {
+    console.error('❌ Module iframe error:', error);
+    if (loadingController) {
+      loadingController.forceHide();
+    }
+    showError(`Failed to load ${module.name}`, 'Module failed to load');
+    navigationController.isTransitioning = false;
+  };
+  
+  // Add to container
   moduleContainer.appendChild(iframe);
   
-  // Inject module readiness helper script into HTML
-  const moduleReadyScript = `
-    <script>
-      // OmniHub Module Readiness Helper
-      window.OmniHubModule = {
-        signalReady: function() {
-          if (window.parent && window.parent !== window) {
-            window.parent.postMessage({ type: 'MODULE_READY', moduleId: '${module.id}' }, '*');
-            console.log('📨 Module ${module.id} signaled ready to parent');
-          }
-        }
-      };
-      
-      // Auto-signal ready when DOM is fully loaded (fallback)
-      if (document.readyState === 'complete') {
-        setTimeout(function() { window.OmniHubModule.signalReady(); }, 100);
-      } else {
-        window.addEventListener('load', function() {
-          setTimeout(function() { window.OmniHubModule.signalReady(); }, 100);
-        });
-      }
-    </script>
-  `;
+  // Set src to load module (this works better with file:// protocol in Electron)
+  iframe.src = module.path;
   
-  // Inject the readiness script before closing body tag
-  const modifiedHtml = html.replace('</body>', moduleReadyScript + '</body>');
-  
-  // Write HTML to iframe
-  iframe.contentDocument.open();
-  iframe.contentDocument.write(modifiedHtml);
-  iframe.contentDocument.close();
-  
-  // Fallback: iframe onload as backup (in case module doesn't signal)
-  iframe.onload = () => {
-    // Give module time to signal ready, otherwise use fallback
-    setTimeout(() => {
-      if (loadingController && loadingController.isLoading()) {
-        console.log(`⚡ Fallback: hiding loading for ${module.name}`);
-        loadingController.hide();
-        navigationController.completeTransition();
-        updateUI(module, navigationController.getCurrentIndex());
-      }
-    }, 500);
-  };
+  // Fallback timeout - force hide loading after 5 seconds
+  setTimeout(() => {
+    if (loadingController && loadingController.isLoading()) {
+      console.log(`⚡ Fallback timeout: force hiding loading for ${module.name}`);
+      loadingController.forceHide();
+      navigationController.completeTransition();
+      updateUI(module, index);
+    }
+  }, 5000);
   
   return iframe;
 }
