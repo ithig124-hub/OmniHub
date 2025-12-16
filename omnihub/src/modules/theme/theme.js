@@ -22,7 +22,8 @@ const THEME_CONFIG = {
     ambientSound: false,
     reduceMotion: false,
     smoothTransitions: true,
-    customWallpaper: null
+    customWallpaper: null,
+    preset: null
   },
   GRADIENTS: {
     ocean: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #3d5ca3 100%)',
@@ -30,7 +31,63 @@ const THEME_CONFIG = {
     forest: 'linear-gradient(135deg, #134e5e 0%, #71b280 100%)',
     night: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
     aurora: 'linear-gradient(135deg, #43cea2 0%, #185a9d 100%)',
-    space: 'linear-gradient(135deg, #000428 0%, #004e92 100%)'
+    space: 'linear-gradient(135deg, #000428 0%, #004e92 100%)',
+    professional: 'linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #3d566e 100%)',
+    hacker: 'linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%)'
+  },
+  PRESETS: {
+    professional: {
+      mode: 'professional',
+      accentColor: '#3498db',
+      gradient: 'professional',
+      blurIntensity: 8,
+      glassOpacity: 10,
+      glowOpacity: 10,
+      motionSpeed: 8,
+      grainAmount: 0,
+      scenery: 'none',
+      reduceMotion: false,
+      smoothTransitions: true
+    },
+    creative: {
+      mode: 'auto',
+      accentColor: '#e74c3c',
+      gradient: 'sunset',
+      blurIntensity: 15,
+      glassOpacity: 20,
+      glowOpacity: 30,
+      motionSpeed: 12,
+      grainAmount: 5,
+      scenery: 'particles',
+      reduceMotion: false,
+      smoothTransitions: true
+    },
+    zen: {
+      mode: 'dark',
+      accentColor: '#27ae60',
+      gradient: 'forest',
+      blurIntensity: 20,
+      glassOpacity: 12,
+      glowOpacity: 15,
+      motionSpeed: 5,
+      grainAmount: 0,
+      scenery: 'waves',
+      reduceMotion: false,
+      smoothTransitions: true
+    },
+    hacker: {
+      mode: 'dark',
+      accentColor: '#00ff00',
+      gradient: 'hacker',
+      blurIntensity: 5,
+      glassOpacity: 8,
+      glowOpacity: 25,
+      motionSpeed: 15,
+      grainAmount: 10,
+      scenery: 'rain',
+      reduceMotion: false,
+      smoothTransitions: true
+    }
   }
 };
 
