@@ -579,6 +579,127 @@
       });
     }
     
+    // ===== CALENDAR FUNCTIONALITY =====
+    let calendarDate = new Date();
+    let events = JSON.parse(localStorage.getItem('omnihub_events') || '[]');
+    
+    function renderCalendar() {
+      const year = calendarDate.getFullYear();
+      const month = calendarDate.getMonth();
+      
+      // Update header
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                         'July', 'August', 'September', 'October', 'November', 'December'];
+      document.getElementById('cal-month-year').textContent = `${monthNames[month]} ${year}`;
+      
+      // Get first day and total days
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const daysInPrevMonth = new Date(year, month, 0).getDate();
+      
+      const container = document.getElementById('calendar-days');
+      container.innerHTML = '';
+      
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      
+      // Previous month days
+      for (let i = firstDay - 1; i >= 0; i--) {
+        const day = document.createElement('div');
+        day.className = 'cal-day other-month';
+        day.textContent = daysInPrevMonth - i;
+        container.appendChild(day);
+      }
+      
+      // Current month days
+      for (let i = 1; i <= daysInMonth; i++) {
+        const day = document.createElement('div');
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        day.className = 'cal-day';
+        day.textContent = i;
+        day.dataset.date = dateStr;
+        
+        if (dateStr === todayStr) {
+          day.classList.add('today');
+        }
+        
+        if (events.some(e => e.date === dateStr)) {
+          day.classList.add('has-event');
+        }
+        
+        day.onclick = () => selectDate(dateStr);
+        container.appendChild(day);
+      }
+      
+      // Next month days (fill to 42 cells)
+      const totalCells = firstDay + daysInMonth;
+      const remainingCells = totalCells <= 35 ? 35 - totalCells : 42 - totalCells;
+      for (let i = 1; i <= remainingCells; i++) {
+        const day = document.createElement('div');
+        day.className = 'cal-day other-month';
+        day.textContent = i;
+        container.appendChild(day);
+      }
+    }
+    
+    function selectDate(dateStr) {
+      renderEventsForDate(dateStr);
+    }
+    
+    function renderEventsForDate(dateStr) {
+      const dayEvents = events.filter(e => e.date === dateStr);
+      const container = document.getElementById('events-list');
+      
+      if (dayEvents.length === 0) {
+        container.innerHTML = '<div class="event-card"><span>📭</span><div><div class="event-title">No events for this day</div></div></div>';
+        return;
+      }
+      
+      container.innerHTML = '';
+      dayEvents.forEach((event, idx) => {
+        const card = document.createElement('div');
+        card.className = 'event-card';
+        card.innerHTML = `
+          <span>${event.icon || '📌'}</span>
+          <div style="flex:1">
+            <div class="event-time">${event.time || 'All day'}</div>
+            <div class="event-title">${event.title}</div>
+          </div>
+          <button onclick="deleteEvent(${idx})" style="background:none;border:none;color:#ef4444;cursor:pointer;">✕</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+    
+    function addEvent() {
+      const title = prompt('Event title:');
+      if (!title) return;
+      
+      const time = prompt('Time (e.g., 10:00 AM) or leave empty for all day:');
+      const today = new Date();
+      const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      
+      events.push({
+        title,
+        time: time || 'All day',
+        date: dateStr,
+        icon: '📌'
+      });
+      
+      localStorage.setItem('omnihub_events', JSON.stringify(events));
+      renderCalendar();
+      renderEventsForDate(dateStr);
+    }
+    
+    function deleteEvent(idx) {
+      events.splice(idx, 1);
+      localStorage.setItem('omnihub_events', JSON.stringify(events));
+      renderCalendar();
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      renderEventsForDate(todayStr);
+    }
+    
     // Initialize
     function init() {
       createIndicators();
@@ -587,21 +708,38 @@
       updateWeather();
       updateQuote();
       
+      // Calendar
+      renderCalendar();
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      renderEventsForDate(todayStr);
+      
+      document.getElementById('cal-prev')?.addEventListener('click', () => {
+        calendarDate.setMonth(calendarDate.getMonth() - 1);
+        renderCalendar();
+      });
+      
+      document.getElementById('cal-next')?.addEventListener('click', () => {
+        calendarDate.setMonth(calendarDate.getMonth() + 1);
+        renderCalendar();
+      });
+      
+      document.getElementById('add-event-btn')?.addEventListener('click', addEvent);
+      
       setInterval(updateTime, 1000);
       setInterval(updateTimeOfDay, 60000);
-      setInterval(updateWeather, 300000); // Every 5 minutes
-      setInterval(updateQuote, 60000); // Every minute
+      setInterval(updateWeather, 300000);
+      setInterval(updateQuote, 60000);
       
       document.getElementById('next-btn').onclick = nextEpisode;
       document.getElementById('prev-btn').onclick = prevEpisode;
       
-      // Keyboard navigation
       document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') nextEpisode();
         if (e.key === 'ArrowLeft') prevEpisode();
       });
       
-      console.log('📊 Dashboard module loaded');
+      console.log('📊 Dashboard module loaded with calendar');
     }
     
     init();
