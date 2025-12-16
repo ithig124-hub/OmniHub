@@ -24,6 +24,8 @@ let MAP_CONFIG = {
 let map;
 let streetLayer;
 let satelliteLayer;
+let terrainLayer;
+let hybridLayer;
 let weatherLayer;
 let currentLayer = 'street';
 let pins = [];
