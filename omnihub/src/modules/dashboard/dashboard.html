@@ -515,22 +515,81 @@
       document.getElementById('uptime').textContent = `${hours}h ${minutes}m ${secs}s`;
     }
     
-    // Fetch Weather (mock for now)
-    function updateWeather() {
-      // Mock weather data
-      const weatherData = {
-        temp: Math.round(20 + Math.random() * 10),
-        feels: Math.round(18 + Math.random() * 10),
-        humidity: Math.round(50 + Math.random() * 30),
-        wind: Math.round(5 + Math.random() * 10),
-        condition: ['☀️', '⛅', '☁️', '🌧️'][Math.floor(Math.random() * 4)]
-      };
-      
-      document.getElementById('temp-main').textContent = `${weatherData.temp}°`;
-      document.getElementById('temp-feels').textContent = `Feels like ${weatherData.feels}°`;
-      document.getElementById('humidity').textContent = `${weatherData.humidity}%`;
-      document.getElementById('wind').textContent = `${weatherData.wind} m/s`;
-      document.getElementById('weather-icon').textContent = weatherData.condition;
+    // Weather API Configuration
+    const WEATHER_API_KEY = '8c7560db67d91f1f14a8f0a35203c33c';
+    const DEFAULT_CITY = 'Perth,AU';
+    
+    // Weather icon mapping
+    const weatherIcons = {
+      '01d': '☀️', '01n': '🌙',
+      '02d': '⛅', '02n': '☁️',
+      '03d': '☁️', '03n': '☁️',
+      '04d': '☁️', '04n': '☁️',
+      '09d': '🌧️', '09n': '🌧️',
+      '10d': '🌦️', '10n': '🌧️',
+      '11d': '⛈️', '11n': '⛈️',
+      '13d': '🌨️', '13n': '🌨️',
+      '50d': '🌫️', '50n': '🌫️'
+    };
+    
+    // Fetch Weather from OpenWeatherMap API
+    async function updateWeather() {
+      try {
+        // Try to get user's location
+        let lat = -31.9505;  // Perth default
+        let lon = 115.8605;
+        let locationName = 'Perth, AU';
+        
+        // Try browser geolocation
+        if (navigator.geolocation) {
+          try {
+            const position = await new Promise((resolve, reject) => {
+              navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+            });
+            lat = position.coords.latitude;
+            lon = position.coords.longitude;
+          } catch (e) {
+            console.log('📍 Using default location (Perth)');
+          }
+        }
+        
+        // Fetch weather data
+        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric`;
+        console.log('🌤️ Fetching weather...');
+        
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.cod === 200) {
+          const temp = Math.round(data.main.temp);
+          const feels = Math.round(data.main.feels_like);
+          const humidity = data.main.humidity;
+          const wind = Math.round(data.wind.speed);
+          const iconCode = data.weather[0].icon;
+          const icon = weatherIcons[iconCode] || '🌤️';
+          locationName = `${data.name}, ${data.sys.country}`;
+          
+          document.getElementById('temp-main').textContent = `${temp}°C`;
+          document.getElementById('temp-feels').textContent = `Feels like ${feels}°C`;
+          document.getElementById('humidity').textContent = `${humidity}%`;
+          document.getElementById('wind').textContent = `${wind} m/s`;
+          document.getElementById('weather-icon').textContent = icon;
+          document.getElementById('weather-location').textContent = `Weather in ${locationName}`;
+          
+          console.log(`✅ Weather updated: ${temp}°C in ${locationName}`);
+        } else {
+          throw new Error(data.message || 'Weather API error');
+        }
+      } catch (error) {
+        console.error('❌ Weather fetch error:', error);
+        // Fallback to mock data
+        document.getElementById('temp-main').textContent = '22°C';
+        document.getElementById('temp-feels').textContent = 'Feels like 20°C';
+        document.getElementById('humidity').textContent = '65%';
+        document.getElementById('wind').textContent = '5 m/s';
+        document.getElementById('weather-icon').textContent = '☀️';
+        document.getElementById('weather-location').textContent = 'Weather (Offline)';
+      }
     }
     
     // Update Quote
