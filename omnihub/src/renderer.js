@@ -398,4 +398,17 @@ if (document.readyState === 'loading') {
   init();
 }
 
+// CRITICAL: Absolute fallback - hide loading screen after 8 seconds no matter what
+setTimeout(() => {
+  const loadingScreen = document.getElementById('loading-screen');
+  if (loadingScreen && loadingScreen.style.display !== 'none') {
+    console.warn('⚠️ CRITICAL FALLBACK: Force hiding loading screen after 8s');
+    loadingScreen.style.transition = 'opacity 0.3s ease';
+    loadingScreen.style.opacity = '0';
+    setTimeout(() => {
+      loadingScreen.style.display = 'none';
+    }, 300);
+  }
+}, 8000);
+
 console.log('🎉 OmniHub Renderer Ready!');
