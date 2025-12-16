@@ -187,7 +187,7 @@ function initMap() {
         maxZoom: 19,
         minZoom: 2
       }),
-      controls: ol.control.defaults({
+      controls: ol.control.defaults.defaults({
         attribution: true,
         zoom: true,
         rotate: false
