@@ -419,7 +419,17 @@ window.OmniHub = {
   },
   
   // Navigation controller access
-  getNavigationController: () => navigationController
+  getNavigationController: () => navigationController,
+  
+  // Loading controller access
+  getLoadingController: () => loadingController,
+  
+  // Signal module ready (for modules to call)
+  signalModuleReady: (moduleId) => {
+    if (loadingController) {
+      loadingController.onModuleReady(moduleId);
+    }
+  }
 };
 
 console.log('🌐 OmniHub global API exposed');
