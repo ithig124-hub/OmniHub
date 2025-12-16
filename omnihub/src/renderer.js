@@ -61,21 +61,35 @@ function init() {
     moduleTitle = document.getElementById('module-title');
     moduleSelector = document.getElementById('module-selector');
     
+    console.log('📍 DOM Elements found:', {
+      moduleContainer: !!moduleContainer,
+      navBar: !!navBar,
+      moduleTitle: !!moduleTitle,
+      moduleSelector: !!moduleSelector
+    });
+    
     // Initialize loading controller FIRST (it's already showing)
-    if (typeof LoadingController !== 'undefined') {
-      loadingController = new LoadingController();
-    } else {
-      loadingController = new window.LoadingController();
+    try {
+      if (typeof window.LoadingController !== 'undefined') {
+        loadingController = new window.LoadingController();
+        loadingController.init();
+        loadingController.updateProgress('Initializing OmniHub...');
+      }
+    } catch (loadErr) {
+      console.warn('⚠️ LoadingController init failed:', loadErr);
     }
-    loadingController.init();
-    loadingController.updateProgress('Initializing OmniHub...');
     
     // Initialize navigation controller
-    if (typeof NavigationController !== 'undefined') {
-      navigationController = new NavigationController(MODULES);
-    } else {
-      // Fallback: NavigationController loaded via script tag
-      navigationController = new window.NavigationController(MODULES);
+    try {
+      if (typeof window.NavigationController !== 'undefined') {
+        navigationController = new window.NavigationController(MODULES);
+      } else {
+        // Fallback: Create simple navigation object
+        navigationController = createFallbackNavigation();
+      }
+    } catch (navErr) {
+      console.warn('⚠️ NavigationController init failed, using fallback:', navErr);
+      navigationController = createFallbackNavigation();
     }
     
     // Setup event listeners
@@ -85,13 +99,18 @@ function init() {
     createNavigationBar();
     createModuleSelector();
     
+    // Setup direct keyboard navigation (fallback)
+    setupDirectKeyboardNavigation();
+    
     // Initialize input handler
-    if (typeof InputHandler !== 'undefined') {
-      inputHandler = new InputHandler(navigationController);
-    } else {
-      inputHandler = new window.InputHandler(navigationController);
+    try {
+      if (typeof window.InputHandler !== 'undefined') {
+        inputHandler = new window.InputHandler(navigationController);
+        inputHandler.init(moduleContainer);
+      }
+    } catch (inputErr) {
+      console.warn('⚠️ InputHandler init failed:', inputErr);
     }
-    inputHandler.init(moduleContainer);
     
     // Load initial module (Notes - lighter module for faster startup)
     loadModule(1, 'init');
@@ -99,9 +118,79 @@ function init() {
     console.log('✅ OmniHub Navigation Engine initialized successfully!');
   } catch (error) {
     console.error('❌ Initialization error:', error);
-    loadingController?.forceHide();
+    if (loadingController) loadingController.forceHide();
     showError('Failed to initialize OmniHub', error.message);
   }
+}
+
+// Fallback navigation if NavigationController fails to load
+function createFallbackNavigation() {
+  return {
+    modules: MODULES,
+    currentIndex: 1,
+    currentModule: MODULES[1],
+    isTransitioning: false,
+    eventListeners: { beforeNavigate: [], afterNavigate: [], moduleActivate: [], moduleDeactivate: [] },
+    on: function(event, cb) { this.eventListeners[event]?.push(cb); },
+    emit: function(event, data) { this.eventListeners[event]?.forEach(cb => cb(data)); },
+    isNavigating: function() { return this.isTransitioning; },
+    getCurrentIndex: function() { return this.currentIndex; },
+    getCurrentModule: function() { return this.currentModule; },
+    getAllModules: function() { return this.modules; },
+    next: function() {
+      if (this.isTransitioning) return { success: false };
+      this.currentIndex = (this.currentIndex + 1) % this.modules.length;
+      this.currentModule = this.modules[this.currentIndex];
+      this.isTransitioning = true;
+      return { success: true, index: this.currentIndex, module: this.currentModule, direction: 'next' };
+    },
+    previous: function() {
+      if (this.isTransitioning) return { success: false };
+      this.currentIndex = (this.currentIndex - 1 + this.modules.length) % this.modules.length;
+      this.currentModule = this.modules[this.currentIndex];
+      this.isTransitioning = true;
+      return { success: true, index: this.currentIndex, module: this.currentModule, direction: 'prev' };
+    },
+    jumpTo: function(target) {
+      if (this.isTransitioning) return { success: false };
+      let idx = typeof target === 'string' ? this.modules.findIndex(m => m.id === target) : target;
+      if (idx < 0 || idx >= this.modules.length) return { success: false };
+      this.currentIndex = idx;
+      this.currentModule = this.modules[idx];
+      this.isTransitioning = true;
+      return { success: true, index: idx, module: this.currentModule, direction: 'jump' };
+    },
+    completeTransition: function() {
+      this.isTransitioning = false;
+      this.emit('afterNavigate', { module: this.currentModule, index: this.currentIndex });
+    }
+  };
+}
+
+// Direct keyboard navigation fallback
+function setupDirectKeyboardNavigation() {
+  document.addEventListener('keydown', (e) => {
+    // Arrow keys with immediate navigation (no space needed)
+    if (e.key === 'ArrowRight' && e.ctrlKey) {
+      e.preventDefault();
+      const result = navigationController.next();
+      if (result.success) loadModule(result.index, 'next');
+    } else if (e.key === 'ArrowLeft' && e.ctrlKey) {
+      e.preventDefault();
+      const result = navigationController.previous();
+      if (result.success) loadModule(result.index, 'prev');
+    }
+    
+    // Number keys 1-6 for direct module access
+    if (e.key >= '1' && e.key <= '6' && !e.ctrlKey && !e.altKey) {
+      const idx = parseInt(e.key) - 1;
+      if (idx < MODULES.length && idx !== navigationController.getCurrentIndex()) {
+        const result = navigationController.jumpTo(idx);
+        if (result.success) loadModule(result.index, 'jump');
+      }
+    }
+  });
+  console.log('⌨️ Direct keyboard navigation enabled (Ctrl+Arrow, 1-6 keys)');
 }
 
 // =======================
