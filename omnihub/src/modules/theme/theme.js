@@ -327,6 +327,31 @@ function drawParticle(ctx, p, type) {
 }
 
 // ============================================
+// PRESET APPLICATION
+// ============================================
+function applyPreset(presetName) {
+  const preset = THEME_CONFIG.PRESETS[presetName];
+  if (!preset) {
+    console.warn('Unknown preset:', presetName);
+    return;
+  }
+  
+  console.log('🎨 Applying preset:', presetName);
+  
+  // Merge preset with current settings
+  themeSettings = { ...themeSettings, ...preset, preset: presetName };
+  
+  // Update UI to reflect new settings
+  updateUIFromSettings();
+  
+  // Apply the theme
+  applyTheme();
+  
+  // Show notification
+  showNotification(`${presetName.charAt(0).toUpperCase() + presetName.slice(1)} preset applied!`);
+}
+
+// ============================================
 // UI HANDLERS
 // ============================================
 function setupEventListeners() {
