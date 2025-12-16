@@ -386,6 +386,18 @@ function setupEventListeners() {
     });
   });
   
+  // Preset buttons
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const presetName = btn.dataset.preset;
+      applyPreset(presetName);
+      
+      // Update UI
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+  
   // Toggles
   document.getElementById('ambient-sound-toggle')?.addEventListener('change', (e) => {
     themeSettings.ambientSound = e.target.checked;
