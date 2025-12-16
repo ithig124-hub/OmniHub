@@ -60,44 +60,107 @@
       gap: 10px;
     }
     
-    #module-title {
-      font-size: 18px;
-      color: rgba(255, 255, 255, 0.9);
-      font-weight: 600;
+    /* Module Title Container with Dropdown */
+    #module-title-container {
+      position: relative;
       flex: 1;
-      text-align: center;
+      display: flex;
+      justify-content: center;
     }
     
-    /* Module Selector (Top-Right) */
+    #module-title {
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.95);
+      font-weight: 600;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    #module-title.clickable {
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+    
+    #module-title.clickable:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .dropdown-arrow {
+      font-size: 12px;
+      opacity: 0.7;
+      transition: transform 0.3s ease;
+    }
+    
+    #module-title.open .dropdown-arrow {
+      transform: rotate(180deg);
+    }
+    
+    /* Dropdown Menu */
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 200px;
+      background: rgba(30, 60, 114, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 8px;
+      z-index: 1000;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      opacity: 1;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .dropdown-menu.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-50%) translateY(-10px);
+    }
+    
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 15px;
+      font-weight: 500;
+    }
+    
+    .dropdown-item:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+    }
+    
+    .dropdown-item.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .dropdown-item-icon {
+      font-size: 20px;
+    }
+    
+    /* Header Right - Time Display */
     #header-right {
       display: flex;
       align-items: center;
       gap: 15px;
     }
     
-    #module-selector {
-      padding: 8px 15px;
-      background: rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 8px;
-      color: white;
+    #header-time {
+      color: rgba(255, 255, 255, 0.8);
       font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      min-width: 150px;
-      outline: none;
-    }
-    
-    #module-selector:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translateY(-1px);
-    }
-    
-    #module-selector option {
-      background: #1e3c72;
-      color: white;
-      padding: 10px;
+      font-weight: 500;
     }
     
     /* Navigation Indicator */
