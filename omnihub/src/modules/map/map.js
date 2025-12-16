@@ -322,6 +322,10 @@ function setupEventListeners() {
   document.getElementById('street-view-btn').addEventListener('click', () => switchLayer('street'));
   document.getElementById('satellite-view-btn').addEventListener('click', () => switchLayer('satellite'));
   
+  // Additional layer buttons
+  document.querySelector('[data-layer="terrain"]')?.addEventListener('click', () => switchLayer('terrain'));
+  document.querySelector('[data-layer="hybrid"]')?.addEventListener('click', () => switchLayer('hybrid'));
+  
   // Weather overlay
   document.getElementById('weather-btn').addEventListener('click', toggleWeatherLayer);
   
