@@ -506,13 +506,12 @@
   <script>
     // Backup initialization - runs if renderer.js didn't initialize properly
     setTimeout(function() {
-      var navBar = document.getElementById('nav-bar');
-      var selector = document.getElementById('module-selector');
+      var dropdown = document.getElementById('module-dropdown');
       var container = document.getElementById('module-container');
       
-      // If nav bar is empty, external scripts didn't load - initialize manually
-      if (navBar && navBar.children.length === 0) {
-        console.warn('⚠️ External scripts failed - using inline backup');
+      // If dropdown is empty, external scripts didn't load - initialize manually
+      if (dropdown && dropdown.children.length === 0) {
+        console.warn('⚠️ External scripts failed - using inline backup with dropdown');
         
         var modules = [
           { id: 'map', name: 'Map', icon: '🗺️', path: './modules/map/map.html' },
@@ -525,29 +524,46 @@
         
         var currentIndex = 1; // Start with Notes
         
-        // Create nav buttons
+        // Create dropdown items
         modules.forEach(function(mod, idx) {
-          var btn = document.createElement('button');
-          btn.className = 'nav-btn' + (idx === currentIndex ? ' active' : '');
-          btn.innerHTML = '<span class="nav-icon">' + mod.icon + '</span><span class="nav-label">' + mod.name + '</span>';
-          btn.onclick = function() { loadMod(idx); };
-          navBar.appendChild(btn);
+          var item = document.createElement('div');
+          item.className = 'dropdown-item' + (idx === currentIndex ? ' active' : '');
+          item.setAttribute('data-index', idx);
+          item.innerHTML = '<span class="dropdown-item-icon">' + mod.icon + '</span><span>' + mod.name + '</span>';
+          item.onclick = function() { 
+            loadMod(idx); 
+            toggleDropdown(false);
+          };
+          dropdown.appendChild(item);
         });
         
-        // Create selector options
-        if (selector) {
-          modules.forEach(function(mod, idx) {
-            var opt = document.createElement('option');
-            opt.value = mod.id;
-            opt.textContent = mod.icon + ' ' + mod.name;
-            if (idx === currentIndex) opt.selected = true;
-            selector.appendChild(opt);
-          });
-          selector.onchange = function() {
-            var idx = modules.findIndex(function(m) { return m.id === selector.value; });
-            if (idx !== -1) loadMod(idx);
+        // Toggle dropdown on title click
+        var titleEl = document.getElementById('module-title');
+        if (titleEl) {
+          titleEl.onclick = function() {
+            toggleDropdown();
           };
         }
+        
+        function toggleDropdown(show) {
+          var isHidden = dropdown.classList.contains('hidden');
+          if (show === undefined) show = isHidden;
+          
+          if (show) {
+            dropdown.classList.remove('hidden');
+            titleEl.classList.add('open');
+          } else {
+            dropdown.classList.add('hidden');
+            titleEl.classList.remove('open');
+          }
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!e.target.closest('#module-title-container')) {
+            toggleDropdown(false);
+          }
+        });
         
         // Load module function
         function loadMod(idx) {
@@ -555,17 +571,14 @@
           var mod = modules[idx];
           
           // Update title
-          var title = document.getElementById('module-title');
-          if (title) title.textContent = mod.icon + ' ' + mod.name;
+          if (titleEl) {
+            titleEl.innerHTML = mod.icon + ' ' + mod.name + ' <span class="dropdown-arrow">▼</span>';
+          }
           
-          // Update nav buttons
-          var btns = navBar.querySelectorAll('.nav-btn');
-          btns.forEach(function(b, i) {
-            b.className = 'nav-btn' + (i === idx ? ' active' : '');
+          // Update dropdown items
+          dropdown.querySelectorAll('.dropdown-item').forEach(function(item, i) {
+            item.className = 'dropdown-item' + (i === idx ? ' active' : '');
           });
-          
-          // Update selector
-          if (selector) selector.value = mod.id;
           
           // Load iframe
           var oldIframe = container.querySelector('iframe');
@@ -581,6 +594,17 @@
           var ls = document.getElementById('loading-screen');
           if (ls) ls.style.display = 'none';
         }
+        
+        // Update time display
+        function updateTime() {
+          var timeEl = document.getElementById('header-time');
+          if (timeEl) {
+            var now = new Date();
+            timeEl.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          }
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
         
         // Load initial module
         loadMod(currentIndex);
