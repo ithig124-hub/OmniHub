@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniHub - Search</title>
+  <link rel="stylesheet" href="search.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #3d5ca3 100%);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    
+    .search-container {
+      width: 100%;
+      max-width: 800px;
+    }
+    
+    .search-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .search-logo {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+    
+    .search-title {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+    
+    .search-subtitle {
+      font-size: 16px;
+      opacity: 0.8;
+    }
+    
+    .search-box {
+      position: relative;
+      margin-bottom: 30px;
+    }
+    
+    .search-input-wrapper {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .search-input {
+      flex: 1;
+      padding: 18px 25px;
+      padding-left: 55px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50px;
+      color: white;
+      font-size: 18px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+    
+    .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .search-input:focus {
+      border-color: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 24px;
+      opacity: 0.7;
+    }
+    
+    .search-btn {
+      padding: 18px 35px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 50px;
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+    }
+    
+    .quick-links {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+    
+    .quick-link {
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .quick-link:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      transform: translateY(-2px);
+    }
+    
+    .search-results {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 20px;
+      display: none;
+    }
+    
+    .search-results.active {
+      display: block;
+    }
+    
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .results-count {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+    
+    .result-item {
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .result-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+    
+    .result-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #a5b4fc;
+    }
+    
+    .result-url {
+      font-size: 14px;
+      color: #10b981;
+      margin-bottom: 10px;
+    }
+    
+    .result-description {
+      font-size: 14px;
+      line-height: 1.6;
+      opacity: 0.8;
+    }
+    
+    .no-results {
+      text-align: center;
+      padding: 40px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .no-results .icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+    
+    .search-tips {
+      margin-top: 30px;
+      text-align: center;
+    }
+    
+    .tips-title {
+      font-size: 16px;
+      margin-bottom: 15px;
+      opacity: 0.8;
+    }
+    
+    .tips-list {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .tip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="search-container">
+    <div class="search-header">
+      <div class="search-logo">🔍</div>
+      <h1 class="search-title">OmniHub Search</h1>
+      <p class="search-subtitle">Search across all your modules and data</p>
+    </div>
+    
+    <div class="search-box">
+      <div class="search-input-wrapper">
+        <span class="search-icon">🔎</span>
+        <input 
+          type="text" 
+          class="search-input" 
+          id="search-input"
+          placeholder="Search notes, maps, library, tracking..."
+          autofocus
+        />
+        <button class="search-btn" id="search-btn">Search</button>
+      </div>
+    </div>
+    
+    <div class="quick-links">
+      <span class="quick-link" onclick="searchFor('recent notes')">📝 Recent Notes</span>
+      <span class="quick-link" onclick="searchFor('saved locations')">📍 Saved Locations</span>
+      <span class="quick-link" onclick="searchFor('library books')">📚 Library Books</span>
+      <span class="quick-link" onclick="searchFor('activity history')">🏃 Activity History</span>
+    </div>
+    
+    <div class="search-results" id="search-results">
+      <div class="results-header">
+        <span class="results-title">Search Results</span>
+        <span class="results-count" id="results-count">0 results</span>
+      </div>
+      
+      <div id="results-container">
+        <!-- Results will be populated here -->
+      </div>
+    </div>
+    
+    <div class="search-tips">
+      <div class="tips-title">Search Tips</div>
+      <div class="tips-list">
+        <span class="tip">💡 Use quotes for exact phrases</span>
+        <span class="tip">📁 Filter by module: notes:meeting</span>
+        <span class="tip">📅 Search by date: date:today</span>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-btn');
+    const searchResults = document.getElementById('search-results');
+    const resultsContainer = document.getElementById('results-container');
+    const resultsCount = document.getElementById('results-count');
+    
+    // Sample data for demo
+    const sampleResults = [
+      {
+        title: 'Meeting Notes - Project Review',
+        url: 'notes > meetings > project-review',
+        description: 'Discussed project milestones and upcoming deadlines. Action items assigned to team members.',
+        module: 'notes'
+      },
+      {
+        title: 'Favorite Location - Central Park',
+        url: 'map > pins > central-park',
+        description: 'Saved location with coordinates and notes about best visiting times.',
+        module: 'map'
+      },
+      {
+        title: 'Research Paper - AI Development',
+        url: 'library > papers > ai-development',
+        description: 'Comprehensive research paper on artificial intelligence development trends.',
+        module: 'library'
+      },
+      {
+        title: 'Weekly Activity Summary',
+        url: 'tracking > reports > weekly',
+        description: 'Summary of activities including steps, calories, and workout sessions.',
+        module: 'tracking'
+      }
+    ];
+    
+    function searchFor(query) {
+      searchInput.value = query;
+      performSearch();
+    }
+    
+    function performSearch() {
+      const query = searchInput.value.trim().toLowerCase();
+      
+      if (!query) {
+        searchResults.classList.remove('active');
+        return;
+      }
+      
+      // Filter results based on query
+      const filteredResults = sampleResults.filter(result => 
+        result.title.toLowerCase().includes(query) ||
+        result.description.toLowerCase().includes(query) ||
+        result.url.toLowerCase().includes(query)
+      );
+      
+      // Display results
+      searchResults.classList.add('active');
+      resultsCount.textContent = `${filteredResults.length} results`;
+      
+      if (filteredResults.length === 0) {
+        resultsContainer.innerHTML = `
+          <div class="no-results">
+            <div class="icon">🔍</div>
+            <p>No results found for "${query}"</p>
+            <p>Try different keywords or check your spelling</p>
+          </div>
+        `;
+      } else {
+        resultsContainer.innerHTML = filteredResults.map(result => `
+          <div class="result-item" onclick="openResult('${result.module}')">
+            <div class="result-title">${result.title}</div>
+            <div class="result-url">${result.url}</div>
+            <div class="result-description">${result.description}</div>
+          </div>
+        `).join('');
+      }
+    }
+    
+    function openResult(module) {
+      if (window.parent && window.parent.OmniHub) {
+        window.parent.OmniHub.navigateToModule(module);
+      }
+    }
+    
+    // Event listeners
+    searchBtn.addEventListener('click', performSearch);
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') performSearch();
+    });
+    
+    console.log('🔍 Search module loaded');
+  </script>
+</body>
+</html>
