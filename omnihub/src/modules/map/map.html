@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Map Module</title>
+  
+  <!-- OpenLayers CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v8.2.0/ol.css">
+  
+  <!-- Module Styles -->
+  <link rel="stylesheet" href="map.css">
+  
+  <style>
+    /* Critical inline styles to ensure visibility */
+    #map {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #e0e0e0;
+    }
+    
+    #loading-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    #error-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #1e3c72;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9998;
+      color: white;
+      padding: 40px;
+      text-align: center;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    
+    #error-screen h2 {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+    
+    #error-screen p {
+      font-size: 16px;
+      margin-bottom: 10px;
+      max-width: 600px;
+    }
+    
+    #error-screen button {
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 16px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="spinner"></div>
+    <h2>🗺️ Loading Map Module...</h2>
+    <p id="loading-status">Initializing OpenLayers...</p>
+  </div>
+  
+  <!-- Error Screen -->
+  <div id="error-screen">
+    <h2>⚠️ Map Loading Error</h2>
+    <p id="error-message">Something went wrong loading the map.</p>
+    <p>Check browser console (F12) for details.</p>
+    <button onclick="location.reload()">🔄 Retry</button>
+  </div>
+  
+  <div class="module-container" id="map-module">
+    
+    <!-- Map Container -->
+    <div id="map" class="map-container"></div>
+    
+    <!-- Coordinate Display Panel -->
+    <div class="coord-panel glass-panel" id="coord-panel">
+      <div class="coord-label">COORDINATES</div>
+      <div class="coord-value" id="coord-display">---, ---</div>
+      <div class="address-value" id="address-display">Move cursor over map...</div>
+    </div>
+    
+    <!-- Control Panel -->
+    <div class="control-panel glass-panel">
+      <button class="control-btn" id="street-view-btn" data-testid="street-view-btn" title="Street View">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 2.18l8 3.6v8.55c0 4.27-2.91 8.28-8 9.48-5.09-1.2-8-5.21-8-9.48V7.78l8-3.6z"/>
+        </svg>
+        <span>Street</span>
+      </button>
+      
+      <button class="control-btn" id="satellite-view-btn" data-testid="satellite-view-btn" title="Satellite View">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+        <span>Satellite</span>
+      </button>
+      
+      <button class="control-btn" id="weather-btn" data-testid="weather-btn" title="Weather Overlay">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4c-1.48 0-2.85.43-4.01 1.17l1.46 1.46C10.21 6.23 11.08 6 12 6c3.04 0 5.5 2.46 5.5 5.5v.5H19c1.66 0 3 1.34 3 3s-1.34 3-3 3H6c-2.21 0-4-1.79-4-4s1.79-4 4-4h.71C7.37 7.69 9.48 6 12 6h.5l-.5.5z"/>
+        </svg>
+        <span>Weather</span>
+      </button>
+      
+      <button class="control-btn" id="routing-btn" data-testid="routing-btn" title="Enable Routing">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M21.71 11.29l-9-9c-.39-.39-1.02-.39-1.41 0l-9 9c-.39.39-.39 1.02 0 1.41l9 9c.39.39 1.02.39 1.41 0l9-9c.39-.38.39-1.01 0-1.41zM14 14.5V12h-4v3H8v-4c0-.55.45-1 1-1h5V7.5l3.5 3.5-3.5 3.5z"/>
+        </svg>
+        <span>Route</span>
+      </button>
+      
+      <button class="control-btn" id="add-pin-btn" data-testid="add-pin-btn" title="Add Pin">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+        </svg>
+        <span>Add Pin</span>
+      </button>
+      
+      <button class="control-btn" id="pins-list-btn" data-testid="pins-list-btn" title="Saved Pins">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+        </svg>
+        <span>Pins</span>
+      </button>
+    </div>
+    
+    <!-- Pin Modal -->
+    <div class="modal-overlay" id="pin-modal">
+      <div class="modal-content glass-panel">
+        <h2>Save Pin</h2>
+        <input type="text" id="pin-name" placeholder="Pin Name" class="glass-input" data-testid="pin-name-input">
+        <textarea id="pin-description" placeholder="Description (optional)" class="glass-input" data-testid="pin-description-input"></textarea>
+        <div class="modal-buttons">
+          <button class="modal-btn save-btn" id="save-pin-btn" data-testid="save-pin-btn">Save</button>
+          <button class="modal-btn cancel-btn" id="cancel-pin-btn" data-testid="cancel-pin-btn">Cancel</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Pins List Modal -->
+    <div class="modal-overlay" id="pins-modal">
+      <div class="modal-content glass-panel pins-list-modal">
+        <h2>Saved Pins</h2>
+        <div id="pins-list-container" class="pins-list"></div>
+        <button class="modal-btn cancel-btn" id="close-pins-btn" data-testid="close-pins-btn">Close</button>
+      </div>
+    </div>
+    
+    <!-- Routing Panel -->
+    <div class="routing-panel glass-panel" id="routing-panel" style="display: none;">
+      <h3>Route Planning</h3>
+      <div class="routing-info" id="routing-info">
+        <p>Click two points on the map to create a route</p>
+        <div id="route-details" style="display: none;">
+          <p><strong>Distance:</strong> <span id="route-distance">--</span></p>
+          <p><strong>Duration:</strong> <span id="route-duration">--</span></p>
+        </div>
+      </div>
+      <div class="routing-buttons">
+        <button class="modal-btn cancel-btn" id="clear-route-btn" data-testid="clear-route-btn">Clear Route</button>
+        <button class="modal-btn cancel-btn" id="close-routing-btn" data-testid="close-routing-btn">Close</button>
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- OpenLayers JS -->
+  <script src="https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js"></script>
+  
+  <!-- Module Script -->
+  <script src="map.js"></script>
+</body>
+</html>

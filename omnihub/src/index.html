@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniHub - Modular Super App</title>
+  
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="styles/global.css">
+  
+  <!-- Core Navigation Transitions -->
+  <link rel="stylesheet" href="core/transitions.css">
+  
+  <style>
+    /* =======================
+       MAIN LAYOUT
+    ======================= */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #3d5ca3 100%);
+    }
+    
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* =======================
+       HEADER
+    ======================= */
+    #header {
+      height: 60px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 100;
+    }
+    
+    #logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    #module-title {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 600;
+      flex: 1;
+      text-align: center;
+    }
+    
+    /* Module Selector (Top-Right) */
+    #header-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    #module-selector {
+      padding: 8px 15px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 150px;
+      outline: none;
+    }
+    
+    #module-selector:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+    
+    #module-selector option {
+      background: #1e3c72;
+      color: white;
+      padding: 10px;
+    }
+    
+    /* Navigation Indicator */
+    #navigation-indicator {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 9999;
+      display: none;
+      animation: fadeIn 0.2s ease;
+    }
+    
+    #navigation-indicator.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    #navigation-indicator.success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+    }
+    
+    /* =======================
+       NAVIGATION BAR
+    ======================= */
+    #nav-bar {
+      height: 80px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(15px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 0 20px;
+      z-index: 99;
+    }
+    
+    .nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 80px;
+    }
+    
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .nav-btn.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .nav-icon {
+      font-size: 24px;
+    }
+    
+    .nav-label {
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    /* =======================
+       MODULE CONTAINER
+    ======================= */
+    #module-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.1);
+    }
+    
+    .module-iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+    }
+    
+    /* =======================
+       LOADING SCREEN
+    ======================= */
+    #loading-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.2s ease;
+    }
+    
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 6px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    /* =======================
+       ERROR CONTAINER
+    ======================= */
+    .error-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 40px;
+      text-align: center;
+      color: white;
+    }
+    
+    .error-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+    
+    .error-container h2 {
+      font-size: 28px;
+      margin-bottom: 15px;
+    }
+    
+    .error-container p {
+      font-size: 16px;
+      margin-bottom: 20px;
+      max-width: 500px;
+      line-height: 1.5;
+    }
+    
+    .retry-btn {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .retry-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.5);
+    }
+    
+    /* =======================
+       ANIMATIONS
+    ======================= */
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideInLeft {
+      from {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    
+    /* =======================
+       RESPONSIVE
+    ======================= */
+    @media (max-width: 768px) {
+      #nav-bar {
+        height: 70px;
+        gap: 5px;
+        padding: 0 10px;
+      }
+      
+      .nav-btn {
+        min-width: 60px;
+        padding: 8px 10px;
+      }
+      
+      .nav-icon {
+        font-size: 20px;
+      }
+      
+      .nav-label {
+        font-size: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <div id="header">
+      <div id="logo">
+        <span>🌐</span>
+        <span>OmniHub</span>
+      </div>
+      <div id="module-title">📝 Notes</div>
+      <div id="header-right">
+        <select id="module-selector" data-testid="module-selector">
+          <!-- Options will be populated by renderer.js -->
+        </select>
+      </div>
+    </div>
+    
+    <!-- Navigation Bar -->
+    <div id="nav-bar">
+      <!-- Navigation buttons will be generated by renderer.js -->
+    </div>
+    
+    <!-- Module Container -->
+    <div id="module-container">
+      <!-- Modules will be loaded here as iframes -->
+    </div>
+    
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+      <div class="spinner"></div>
+      <div class="loading-text">Loading...</div>
+    </div>
+    
+    <!-- Navigation Indicator -->
+    <div id="navigation-indicator"></div>
+  </div>
+  
+  <!-- Core Navigation System -->
+  <script src="core/navigation.js"></script>
+  <script src="core/input.js"></script>
+  
+  <!-- Renderer Script -->
+  <script src="renderer.js"></script>
+</body>
+</html>

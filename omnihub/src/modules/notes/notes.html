@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniHub - Notes</title>
+    <link rel="stylesheet" href="notes.css">
+</head>
+<body>
+    <div id="notes-container" class="notes-app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Sidebar Header -->
+            <div class="sidebar-header">
+                <h2>Notes</h2>
+                <div class="button-group">
+                    <button id="new-note-btn" class="btn-primary" title="New Note">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        New Note
+                    </button>
+                    <button id="daily-note-btn" class="btn-daily" title="Today's Daily Note">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                            <path d="M2 6H14M5 1V3M11 1V3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                        Daily Note
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <input type="text" id="note-search" placeholder="Search notes..." class="search-input">
+            </div>
+
+            <!-- Tabs -->
+            <div class="sidebar-tabs">
+                <button class="tab-btn active" data-tab="tree">Tree</button>
+                <button class="tab-btn" data-tab="tags">Tags</button>
+                <button class="tab-btn" data-tab="pinned">Pinned</button>
+                <button class="tab-btn" data-tab="daily">Daily</button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- Tree View -->
+                <div id="tree-tab" class="tab-pane active">
+                    <div id="notes-tree" class="notes-tree"></div>
+                </div>
+
+                <!-- Tags View -->
+                <div id="tags-tab" class="tab-pane">
+                    <div id="tags-list" class="tags-list"></div>
+                </div>
+
+                <!-- Pinned View -->
+                <div id="pinned-tab" class="tab-pane">
+                    <div id="pinned-list" class="pinned-list"></div>
+                </div>
+
+                <!-- Daily Notes View -->
+                <div id="daily-tab" class="tab-pane">
+                    <div id="daily-list" class="daily-list"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Editor Panel -->
+        <main class="editor-panel">
+            <!-- Editor Header -->
+            <div class="editor-header">
+                <input type="text" id="note-title" placeholder="Untitled Note" class="note-title-input">
+                <div class="editor-actions">
+                    <button id="pin-note-btn" class="btn-icon" title="Pin Note">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M9 3V6L12 9L11 10L8 7V13L7 14L6 13V7L3 10L2 9L5 6V3H9Z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                    <button id="link-note-btn" class="btn-icon" title="Link to Note">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M7 3H3V13H13V9M10 2H14V6M6 10L14 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                    <button id="delete-note-btn" class="btn-icon btn-danger" title="Delete Note">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M3 4H13M5 4V3H11V4M6 7V11M10 7V11M4 4L5 13H11L12 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Metadata Bar -->
+            <div class="metadata-bar">
+                <div class="metadata-left">
+                    <span class="metadata-item" id="note-created">Created: --</span>
+                    <span class="metadata-item" id="note-modified">Modified: --</span>
+                </div>
+                <div class="metadata-right">
+                    <div class="tags-input-container">
+                        <input type="text" id="tags-input" placeholder="Add tags..." class="tags-input">
+                        <div id="tags-display" class="tags-display"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Editor Content -->
+            <div class="editor-content">
+                <textarea id="note-editor" placeholder="Start writing your note..."></textarea>
+            </div>
+
+            <!-- Backlinks Panel (Structure for future) -->
+            <div class="backlinks-panel collapsed" id="backlinks-panel">
+                <div class="panel-header">
+                    <h3>Backlinks</h3>
+                    <button id="toggle-backlinks" class="btn-icon">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="panel-content" id="backlinks-content">
+                    <!-- Backlinks will be listed here -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar (Future: Note Graph, Connections) -->
+        <aside class="right-sidebar collapsed" id="right-sidebar">
+            <div class="sidebar-header">
+                <h3>Connections</h3>
+                <button id="toggle-right-sidebar" class="btn-icon">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="connections-content">
+                <!-- Future: Note graph visualization -->
+                <div id="note-graph-container" class="note-graph-placeholder">
+                    <p>Graph view coming soon</p>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Link Note Modal -->
+    <div id="link-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Link to Note</h3>
+                <button class="modal-close" id="close-link-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="link-search" placeholder="Search notes to link..." class="search-input">
+                <div id="link-results" class="link-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="notes.js"></script>
+</body>
+</html>
