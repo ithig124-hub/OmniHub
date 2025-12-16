@@ -162,8 +162,11 @@ function applyTheme() {
   // Apply grain
   applyGrain(themeSettings.grainAmount);
   
-  // Apply scenery
+  // Apply canvas scenery (particles, rain, etc.)
   updateScenery(themeSettings.scenery);
+  
+  // Apply video scenery (FPV drone footage)
+  updateVideoScenery(themeSettings.videoScenery);
   
   // Update preview
   updatePreview();
