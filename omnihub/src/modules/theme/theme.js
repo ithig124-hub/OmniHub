@@ -532,6 +532,28 @@ function setupEventListeners() {
   });
   document.getElementById('import-file')?.addEventListener('change', importTheme);
   
+  // Video Scenery Options
+  document.querySelectorAll('.video-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.video-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      themeSettings.videoScenery = btn.dataset.video;
+      updateVideoScenery(btn.dataset.video);
+    });
+  });
+  
+  // Video Opacity Slider
+  setupSlider('video-opacity-slider', 'video-opacity-value', '%', (v) => {
+    themeSettings.videoOpacity = v;
+    updateVideoOpacity(v);
+  });
+  
+  // Video Dim Toggle
+  document.getElementById('video-dim-toggle')?.addEventListener('change', (e) => {
+    themeSettings.videoDim = e.target.checked;
+    updateVideoDim(e.target.checked);
+  });
+  
   // Window resize
   window.addEventListener('resize', () => {
     const canvas = document.getElementById('scenery-canvas');
