@@ -10,9 +10,9 @@ class LoadingController {
     this.isVisible = true;
     this.currentModuleName = '';
     this.loadingTimeout = null;
-    this.minDisplayTime = 300; // Minimum loading display time (ms)
-    this.maxWaitTime = 10000; // Maximum wait time before force-hiding (ms)
-    this.fadeOutDuration = 300; // Fade out animation duration (ms)
+    this.minDisplayTime = 200; // Minimum loading display time (ms)
+    this.maxWaitTime = 5000; // Maximum wait time before force-hiding (ms)
+    this.fadeOutDuration = 250; // Fade out animation duration (ms)
     this.loadingStartTime = 0;
     this.moduleReadyCallbacks = new Map();
     
