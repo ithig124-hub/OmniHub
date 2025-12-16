@@ -6,11 +6,13 @@
 // Configuration - Check if config.js exists, otherwise use defaults
 let WEATHER_API_KEY = '8c7560db67d91f1f14a8f0a35203c33c';
 let MAP_CONFIG = {
-  initialCenter: [-74.006, 40.7128],
-  initialZoom: 12,
+  initialCenter: [115.8605, -31.9505], // Perth, Australia
+  initialZoom: 10,
+  minZoom: 2,
+  maxZoom: 19,
   streetTileUrl: 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
   satelliteTileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-  nominatimUrl: 'https://nominatim.openstreetmap.org/reverse',
+  nominatimUrl: 'https://nominatim.openstreetmap.org',
   osrmUrl: 'https://router.project-osrm.org/route/v1/driving',
   weatherTileUrl: 'https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png',
   geocodingDelay: 500,
