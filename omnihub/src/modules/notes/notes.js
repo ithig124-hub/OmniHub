@@ -715,6 +715,9 @@ class NotesUI {
                     await this.manager.createLink(this.manager.currentNote.id, linkedNote.id);
                 }
             }
+            
+            // Sync to DataStore after content change
+            syncNotesToDataStore();
         }, 500);
     }
 
