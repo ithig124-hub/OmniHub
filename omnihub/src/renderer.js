@@ -473,22 +473,36 @@ function applyTransition(element, direction) {
 // UI UPDATES
 // =======================
 function updateUI(module, index) {
-  // Update title
+  // Update title with dropdown arrow
   if (moduleTitle) {
-    moduleTitle.textContent = `${module.icon} ${module.name}`;
+    moduleTitle.innerHTML = `${module.icon} ${module.name} <span class="dropdown-arrow">▼</span>`;
   }
   
-  // Update navigation buttons
-  const navButtons = navBar.querySelectorAll('.nav-btn');
-  navButtons.forEach((btn, i) => {
-    if (i === index) {
-      btn.classList.add('active');
-    } else {
-      btn.classList.remove('active');
-    }
-  });
+  // Update dropdown items
+  if (moduleDropdown) {
+    const dropdownItems = moduleDropdown.querySelectorAll('.dropdown-item');
+    dropdownItems.forEach((item, i) => {
+      if (i === index) {
+        item.classList.add('active');
+      } else {
+        item.classList.remove('active');
+      }
+    });
+  }
   
-  // Update selector
+  // Update navigation buttons (hidden but kept for compatibility)
+  if (navBar) {
+    const navButtons = navBar.querySelectorAll('.nav-btn');
+    navButtons.forEach((btn, i) => {
+      if (i === index) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
+  
+  // Update selector (hidden)
   if (moduleSelector) {
     moduleSelector.value = module.id;
   }
