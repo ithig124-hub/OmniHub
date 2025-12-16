@@ -195,6 +195,65 @@ function applyGrain(amount) {
   }
 }
 
+// ============================================
+// VIDEO SCENERY (FPV Drone Footage)
+// ============================================
+function updateVideoScenery(videoType) {
+  const videoContainer = document.getElementById('video-background');
+  const videoEl = document.getElementById('fpv-video');
+  const overlay = document.querySelector('.video-overlay');
+  
+  if (!videoContainer || !videoEl) return;
+  
+  if (videoType === 'none' || !videoType) {
+    videoContainer.classList.add('hidden');
+    videoEl.pause();
+    videoEl.src = '';
+    console.log('🎬 Video scenery disabled');
+    return;
+  }
+  
+  const videoUrl = THEME_CONFIG.VIDEO_SOURCES[videoType];
+  if (!videoUrl) {
+    console.warn('Unknown video type:', videoType);
+    return;
+  }
+  
+  // Set video source
+  videoEl.src = videoUrl;
+  
+  // Apply opacity settings
+  const opacity = themeSettings.videoOpacity / 100;
+  videoEl.style.opacity = opacity;
+  
+  // Apply dim overlay if enabled
+  if (overlay) {
+    overlay.style.background = themeSettings.videoDim 
+      ? 'rgba(0, 0, 0, 0.4)' 
+      : 'transparent';
+  }
+  
+  // Show video and play
+  videoContainer.classList.remove('hidden');
+  videoEl.play().catch(e => console.log('Video autoplay blocked:', e));
+  
+  console.log(`🎬 Video scenery enabled: ${videoType} (${Math.round(opacity * 100)}% opacity)`);
+}
+
+function updateVideoOpacity(opacity) {
+  const videoEl = document.getElementById('fpv-video');
+  if (videoEl) {
+    videoEl.style.opacity = opacity / 100;
+  }
+}
+
+function updateVideoDim(enabled) {
+  const overlay = document.querySelector('.video-overlay');
+  if (overlay) {
+    overlay.style.background = enabled ? 'rgba(0, 0, 0, 0.4)' : 'transparent';
+  }
+}
+
 function updatePreview() {
   const previewBox = document.getElementById('preview-box');
   if (!previewBox) return;
