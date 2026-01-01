@@ -79,3 +79,7 @@ agenthub/agents/youtube/db
 # Mobile development
 android-sdk/ omnihub/node_modules/electron/dist/electron
 omnihub/node_modules/electron/dist/electron
+-e 
+# Environment files
+*.env
+*.env.*

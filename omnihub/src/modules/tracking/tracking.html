@@ -593,6 +593,51 @@
     }
     
     init();
+    
+    // Module lifecycle hooks for OmniHub navigation
+    window.trackingModule = {
+      onActivate: () => {
+        console.log('📍 Tracking activated');
+        // Resume tracking if it was active
+        if (isTracking) {
+          startTracking();
+        }
+      },
+      onDeactivate: () => {
+        console.log('📤 Tracking deactivated');
+        // Keep data but pause simulation when not active
+      },
+      getState: () => ({
+        trackingData: trackingData,
+        isTracking: isTracking,
+        sessionStart: sessionStart
+      }),
+      restoreState: (state) => {
+        if (state.trackingData) {
+          trackingData = state.trackingData;
+          totalPointsEl.textContent = trackingData.length;
+          // Re-render log
+          logContainer.innerHTML = '';
+          trackingData.forEach(point => {
+            const logItem = createLogItem(point);
+            logContainer.appendChild(logItem);
+          });
+          if (trackingData.length === 0) {
+            logContainer.appendChild(emptyLog);
+            emptyLog.style.display = 'block';
+          }
+        }
+        if (state.isTracking !== undefined) {
+          isTracking = state.isTracking;
+          toggleBtn.textContent = isTracking ? '⏸️ Pause' : '▶️ Resume';
+          statusIndicator.className = `status-indicator ${isTracking ? 'active' : 'inactive'}`;
+          statusText.textContent = isTracking ? 'Tracking Active' : 'Tracking Paused';
+        }
+        if (state.sessionStart) {
+          sessionStart = new Date(state.sessionStart);
+        }
+      }
+    };
   </script>
 </body>
 </html>

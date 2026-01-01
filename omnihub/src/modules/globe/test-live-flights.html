@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Globe Module Test - Live Flights</title>
+  <link rel="stylesheet" href="globe.css">
+  <style>
+    /* Quick test styles */
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    
+    .test-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 10px;
+      text-align: center;
+      z-index: 10000;
+      font-size: 14px;
+    }
+    
+    .test-banner .status {
+      display: inline-block;
+      margin: 0 10px;
+    }
+    
+    .test-banner .success {
+      color: #4CAF50;
+    }
+    
+    .test-banner .error {
+      color: #f44336;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-banner">
+    🧪 <strong>Globe Module Test</strong> | 
+    <span id="test-status" class="status">Initializing...</span>
+  </div>
+
+  <!-- Main Globe Container -->
+  <div id="globe-container"></div>
+
+  <!-- Zoom Level Indicator -->
+  <div id="zoom-level-indicator" class="glass-panel" style="position: absolute; top: 60px; left: 50%; transform: translateX(-50%); padding: 10px 20px; z-index: 100;">
+    <span id="zoom-level-text">Zoom: Planetary</span>
+  </div>
+
+  <!-- Unified Research Panel -->
+  <div id="unified-panel" class="glass-panel unified-research-panel">
+    <div class="panel-header">
+      <h2>🔬 Research Hub</h2>
+      <button id="toggle-panel-btn" class="collapse-btn">−</button>
+    </div>
+
+    <div id="panel-content" class="panel-content">
+      <!-- Search Section -->
+      <div class="panel-section">
+        <h3>🔎 Search</h3>
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="Search location...">
+          <button id="search-btn">Go</button>
+        </div>
+        <div id="search-results"></div>
+      </div>
+
+      <!-- Live Flights Section -->
+      <div class="panel-section">
+        <h3>✈️ Live Flights</h3>
+        <div class="flight-controls">
+          <button id="toggle-live-flights-btn" class="tool-btn">
+            🛫 Start Live Tracking
+          </button>
+          <div id="flight-count" style="margin-top: 8px; font-size: 0.9rem; opacity: 0.8;">
+            No active flights
+          </div>
+        </div>
+      </div>
+
+      <!-- Layers Section -->
+      <div class="panel-section collapsible">
+        <h3 class="section-toggle" data-section="layers">
+          🌍 Layers <span class="toggle-icon">▼</span>
+        </h3>
+        <div class="section-content" id="layers-content">
+          <div class="layer-item">
+            <input type="checkbox" id="layer-atmosphere" checked>
+            <label for="layer-atmosphere">☁️ Atmosphere</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Research Tools Section -->
+      <div class="panel-section collapsible">
+        <h3 class="section-toggle" data-section="research-tools">
+          🔬 Research Tools <span class="toggle-icon">▼</span>
+        </h3>
+        <div class="section-content collapsed" id="research-tools-content">
+          <button id="toggle-research-btn" class="tool-btn">🔬 Research Mode</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Panel -->
+  <div id="info-panel" class="glass-panel">
+    <div id="coordinates-display">
+      <span id="lat-display">Lat: --</span>
+      <span id="lng-display">Lng: --</span>
+    </div>
+    <div id="location-info">
+      <p>Hover over Earth to see coordinates</p>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <div id="pin-modal" class="modal hidden">
+    <div class="modal-content glass-panel">
+      <span class="close-btn">&times;</span>
+      <h2 id="modal-title">Location Details</h2>
+      <div id="modal-body">
+        <p><strong>Coordinates:</strong> <span id="modal-coords"></span></p>
+      </div>
+      <div class="modal-actions">
+        <button id="save-pin-btn">📍 Save Pin</button>
+        <button id="close-modal-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="flight-details-modal" class="modal hidden"></div>
+
+  <div id="globe-loader" class="loader hidden">
+    <div class="spinner"></div>
+    <p>Loading Globe...</p>
+  </div>
+
+  <!-- Scripts -->
+  <script src="libs/three.min.js"></script>
+  <script src="libs/globe.gl.min.js"></script>
+  <script src="libs/d3.min.js"></script>
+  
+  <script src="globeState.js"></script>
+  <script src="data/staticDatasets.js"></script>
+  <script src="layers/flights.js"></script>
+  <script src="layers/shipping.js"></script>
+  <script src="layers/oceans.js"></script>
+  
+  <script src="zoomIntelligence.js"></script>
+  <script src="dataAdapters.js"></script>
+  <script src="smartPins.js"></script>
+  <script src="overlayManager.js"></script>
+  <script src="researchMode.js"></script>
+  <script src="annotationSystem.js"></script>
+  <script src="dataExporter.js"></script>
+  <script src="flightTracker.js"></script>
+  
+  <script src="globe.js"></script>
+
+  <script>
+    // Test status updates
+    const statusEl = document.getElementById('test-status');
+    
+    function updateStatus(message, isError = false) {
+      statusEl.textContent = message;
+      statusEl.className = isError ? 'status error' : 'status success';
+      console.log(isError ? '❌' : '✅', message);
+    }
+
+    // Monitor initialization
+    setTimeout(() => {
+      if (typeof globeInstance !== 'undefined' && globeInstance) {
+        updateStatus('Globe initialized successfully!');
+        
+        // Check for flight tracker
+        if (window.FlightTracker) {
+          updateStatus('Globe + Flight Tracker ready!');
+        }
+      } else {
+        updateStatus('Globe initialization failed', true);
+      }
+    }, 3000);
+
+    // Log errors
+    window.addEventListener('error', (e) => {
+      updateStatus('Error: ' + e.message, true);
+    });
+  </script>
+</body>
+</html>

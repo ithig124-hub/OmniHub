@@ -1,31 +1,15 @@
-// =======================
-// OMNIHUB PRELOAD SCRIPT
-// Exposes safe APIs to renderer process
-// =======================
-
 const { contextBridge, ipcRenderer } = require('electron');
 
-console.log('🔒 OmniHub Preload Script Loading...');
-
-// =======================
-// EXPOSE SAFE APIs
-// =======================
-
+// Expose safe APIs to renderer process
 contextBridge.exposeInMainWorld('electronAPI', {
-  // Module data management
-  getModuleData: (moduleId) => ipcRenderer.invoke('get-module-data', moduleId),
-  setModuleData: (moduleId, data) => ipcRenderer.invoke('set-module-data', moduleId, data),
+  // DataStore API
+  dataStore: {
+    get: (key) => ipcRenderer.invoke('dataStore:get', key),
+    set: (key, value) => ipcRenderer.invoke('dataStore:set', key, value),
+    remove: (key) => ipcRenderer.invoke('dataStore:remove', key)
+  },
   
-  // External API calls (optional, for secure external requests)
-  fetchExternal: (url, options) => ipcRenderer.invoke('fetch-external', url, options),
-  
-  // System info
+  // Platform info
   platform: process.platform,
-  version: process.versions.electron,
-  
-  // Utility functions
-  log: (message) => console.log('📡 Renderer:', message)
+  version: process.versions.electron
 });
-
-console.log('✅ OmniHub APIs exposed to renderer');
-console.log('🎉 Preload script ready!');

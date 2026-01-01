@@ -3,7 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Content Security Policy for Electron Security -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+    style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com;
+    img-src 'self' data: https: blob:;
+    font-src 'self' https://fonts.gstatic.com;
+    connect-src 'self' https:;
+    frame-src 'self';
+    media-src 'self' https:;
+  ">
+  
   <title>OmniHub - Modular Super App</title>
+  
+  <!-- Global Theme System -->
+  <link rel="stylesheet" href="./core/themeIntegration.css">
   
   <!-- Global Styles -->
   <link rel="stylesheet" href="./styles/global.css">
@@ -105,16 +121,18 @@
       top: 100%;
       left: 50%;
       transform: translateX(-50%);
-      min-width: 200px;
-      background: rgba(30, 60, 114, 0.95);
+      min-width: 240px;
+      max-width: 300px;
+      background: rgba(30, 60, 114, 0.98);
       backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       border-radius: 16px;
       padding: 8px;
-      z-index: 1000;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      z-index: 10000;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
       opacity: 1;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-top: 8px;
     }
     
     .dropdown-menu.hidden {
@@ -494,11 +512,18 @@
     })();
   </script>
   
+  <!-- Global Theme System (MUST LOAD FIRST) -->
+  <script src="./core/globalTheme.js"></script>
+  
   <!-- Core Systems -->
   <script src="./core/loading.js"></script>
   <script src="./core/navigation.js"></script>
   <script src="./core/input.js"></script>
   <script src="./core/dataStore.js"></script>
+  
+  <!-- V3: Dashboard System -->
+  <script src="./core/categoryRegistry.js"></script>
+  <script src="./core/dashboardRouter.js"></script>
   
   <!-- Renderer Script -->
   <script src="./renderer.js"></script>
@@ -510,15 +535,20 @@
       var dropdown = document.getElementById('module-dropdown');
       var container = document.getElementById('module-container');
       
-      // If dropdown is empty, external scripts didn't load - initialize manually
-      if (dropdown && dropdown.children.length === 0) {
+      // If dropdown is empty AND no iframe loaded, external scripts didn't load
+      var hasIframe = container && container.querySelector('iframe');
+      
+      if (dropdown && dropdown.children.length === 0 && !hasIframe) {
         console.warn('⚠️ External scripts failed - using inline backup with dropdown');
         
         var modules = [
           { id: 'map', name: 'Map', icon: '🗺️', path: './modules/map/map.html' },
+          { id: 'globe', name: 'Globe', icon: '🌍', path: './modules/globe/globe.html' },
           { id: 'notes', name: 'Notes', icon: '📝', path: './modules/notes/notes.html' },
           { id: 'library', name: 'Library', icon: '📚', path: './modules/library/library.html' },
           { id: 'search', name: 'Search', icon: '🔍', path: './modules/search/search.html' },
+          { id: 'factLens', name: 'FactLens', icon: '🔬', path: './modules/factLens/factLens.html' },
+          { id: 'snackScout', name: 'SnackScout', icon: '🍿', path: './modules/snackScout/snackScout.html' },
           { id: 'dashboard', name: 'Dashboard', icon: '📊', path: './modules/dashboard/dashboard.html' },
           { id: 'tracking', name: 'Tracking', icon: '📍', path: './modules/tracking/tracking.html' },
           { id: 'theme', name: 'Theme', icon: '🎨', path: './modules/theme/theme.html' }
@@ -611,7 +641,7 @@
         // Load initial module
         loadMod(currentIndex);
       }
-    }, 1500);
+    }, 3000); // Increased timeout to give renderer.js time to init
   </script>
 </body>
 </html>

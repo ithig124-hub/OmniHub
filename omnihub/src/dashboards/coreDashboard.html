@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Core Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    .dashboard-container {
+      height: 100vh;
+      padding: 50px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 35px;
+      overflow-y: auto;
+    }
+
+    /* Time & Date - Very Prominent */
+    .dashboard-time-date {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .current-time {
+      font-size: 96px;
+      font-weight: 300;
+      margin-bottom: 8px;
+      letter-spacing: -4px;
+      line-height: 1;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .current-date {
+      font-size: 28px;
+      font-weight: 400;
+      opacity: 0.85;
+      letter-spacing: 0.5px;
+    }
+
+    /* Header */
+    .dashboard-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .dashboard-title {
+      font-size: 42px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      opacity: 0.95;
+    }
+
+    .dashboard-subtitle {
+      font-size: 18px;
+      opacity: 0.7;
+      font-weight: 400;
+    }
+
+    /* Main Search Card - Extra Large */
+    .search-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 28px;
+      padding: 50px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .search-card:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-6px);
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 32px;
+      opacity: 0.6;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 28px 28px 28px 80px;
+      font-size: 24px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      color: white;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.45);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .search-description {
+      text-align: center;
+      opacity: 0.65;
+      font-size: 15px;
+    }
+
+    /* Widget Grid - Larger Cards */
+    .widget-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 28px;
+    }
+
+    .widget-card {
+      background: rgba(255, 255, 255, 0.13);
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 24px;
+      padding: 40px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .widget-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.3) 100%);
+      transform: scaleX(0);
+      transition: transform 0.4s ease;
+    }
+
+    .widget-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .widget-card:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    .widget-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      display: block;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+    }
+
+    .widget-title {
+      font-size: 26px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+
+    .widget-description {
+      font-size: 15px;
+      opacity: 0.75;
+      line-height: 1.5;
+    }
+
+    /* Recent Section */
+    .recent-section {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 24px;
+      padding: 35px;
+    }
+
+    .section-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      opacity: 0.95;
+    }
+
+    .recent-item {
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .recent-item:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateX(5px);
+    }
+
+    .recent-item-icon {
+      font-size: 28px;
+    }
+
+    .recent-item-text {
+      flex: 1;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .recent-item-time {
+      font-size: 13px;
+      opacity: 0.6;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dashboard-container > * {
+      animation: fadeIn 0.7s ease forwards;
+    }
+
+    .dashboard-container > *:nth-child(2) { animation-delay: 0.1s; }
+    .dashboard-container > *:nth-child(3) { animation-delay: 0.2s; }
+    .dashboard-container > *:nth-child(4) { animation-delay: 0.3s; }
+    .dashboard-container > *:nth-child(5) { animation-delay: 0.4s; }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Time and Date Display -->
+    <div class="dashboard-time-date">
+      <div class="current-time" id="current-time">12:00</div>
+      <div class="current-date" id="current-date">Monday, January 1</div>
+    </div>
+
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div class="dashboard-title">🧭 OmniHub Core</div>
+      <div class="dashboard-subtitle">Search, Notes & Essential Tools</div>
+    </div>
+
+    <!-- Main Search Card -->
+    <div class="search-card" data-testid="omnisearch-card">
+      <div class="search-input-wrapper">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Search everything..."
+          data-testid="omnisearch-input"
+          id="omnisearch-input"
+        />
+      </div>
+      <div class="search-description">
+        Press Enter to open full search • Search across all modules and data
+      </div>
+    </div>
+
+    <!-- Quick Access Widgets -->
+    <div class="widget-grid">
+      <div class="widget-card" data-module="search" data-testid="search-widget">
+        <span class="widget-icon">🔍</span>
+        <div class="widget-title">Advanced Search</div>
+        <div class="widget-description">Deep search across all modules, pins, and saved data</div>
+      </div>
+
+      <div class="widget-card" data-module="notes" data-testid="notes-widget">
+        <span class="widget-icon">📝</span>
+        <div class="widget-title">Notes</div>
+        <div class="widget-description">Create and organize your thoughts and ideas</div>
+      </div>
+
+      <div class="widget-card" data-module="dashboard" data-testid="dashboard-widget">
+        <span class="widget-icon">📊</span>
+        <div class="widget-title">Dashboard</div>
+        <div class="widget-description">Ambient dashboard with weather and calendar</div>
+      </div>
+
+      <div class="widget-card" data-module="theme" data-testid="theme-widget">
+        <span class="widget-icon">🎨</span>
+        <div class="widget-title">Theme</div>
+        <div class="widget-description">Customize colors and appearance</div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="recent-section">
+      <div class="section-title">
+        <span>⏱️</span>
+        <span>Recent Activity</span>
+      </div>
+      <div class="recent-item" data-module="notes">
+        <span class="recent-item-icon">📝</span>
+        <div class="recent-item-text">Last edited note</div>
+        <span class="recent-item-time">2 hours ago</span>
+      </div>
+      <div class="recent-item" data-module="search">
+        <span class="recent-item-icon">🔍</span>
+        <div class="recent-item-text">Recent search</div>
+        <span class="recent-item-time">5 hours ago</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Update time and date
+    function updateTimeAndDate() {
+      const now = new Date();
+      
+      const timeEl = document.getElementById('current-time');
+      if (timeEl) {
+        timeEl.textContent = now.toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          hour12: true 
+        });
+      }
+      
+      const dateEl = document.getElementById('current-date');
+      if (dateEl) {
+        dateEl.textContent = now.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          month: 'long', 
+          day: 'numeric'
+        });
+      }
+    }
+    
+    updateTimeAndDate();
+    setInterval(updateTimeAndDate, 60000);
+
+    // Module navigation handler
+    function navigateToModule(moduleId) {
+      if (window.parent && window.parent.OmniHub) {
+        console.log('📍 Core Dashboard: Navigating to module:', moduleId);
+        window.parent.OmniHub.navigateToModule(moduleId);
+      } else {
+        console.warn('⚠️ OmniHub API not available');
+      }
+    }
+
+    // Search input handler
+    const searchInput = document.getElementById('omnisearch-input');
+    if (searchInput) {
+      searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && searchInput.value.trim()) {
+          navigateToModule('search');
+        }
+      });
+
+      // Focus search on load
+      setTimeout(() => searchInput.focus(), 300);
+    }
+
+    // Widget click handlers
+    document.querySelectorAll('.widget-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const moduleId = card.getAttribute('data-module');
+        if (moduleId) {
+          navigateToModule(moduleId);
+        }
+      });
+    });
+
+    // Recent item click handlers
+    document.querySelectorAll('.recent-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const moduleId = item.getAttribute('data-module');
+        if (moduleId) {
+          navigateToModule(moduleId);
+        }
+      });
+    });
+
+    console.log('🧭 Core Dashboard loaded');
+  </script>
+</body>
+</html>

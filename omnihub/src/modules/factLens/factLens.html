@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FactLens - Research & Insight Module</title>
+  <link rel="stylesheet" href="factLens.css">
+</head>
+<body>
+  <div class="factlens-container">
+    <!-- Header Section -->
+    <div class="factlens-header">
+      <div class="header-content">
+        <h1 class="factlens-title">🔬 FactLens</h1>
+        <p class="factlens-subtitle">Deep Research & Understanding Layer</p>
+      </div>
+      <div class="header-controls">
+        <div class="difficulty-selector">
+          <label>Difficulty:</label>
+          <select id="difficulty-level" data-testid="difficulty-selector">
+            <option value="simple">Simple</option>
+            <option value="student" selected>Student</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </div>
+        <button id="visual-mode-btn" class="mode-btn" data-testid="visual-mode-btn">
+          📊 Visual Mode
+        </button>
+      </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-section">
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          id="topic-search" 
+          class="topic-input" 
+          placeholder="Enter a topic (e.g., Plate tectonics, World War I, Photosynthesis)..."
+          data-testid="topic-search-input"
+        />
+        <button id="search-btn" class="search-button" data-testid="search-btn">Analyze</button>
+      </div>
+      <div class="quick-topics">
+        <span class="quick-label">Quick Topics:</span>
+        <button class="quick-topic" data-topic="Photosynthesis">🌱 Photosynthesis</button>
+        <button class="quick-topic" data-topic="World War I">⚔️ World War I</button>
+        <button class="quick-topic" data-topic="Black Holes">🌌 Black Holes</button>
+        <button class="quick-topic" data-topic="Renaissance">🎨 Renaissance</button>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div id="content-area" class="content-area">
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-state">
+        <div class="empty-icon">🔬</div>
+        <h3>Start Your Research</h3>
+        <p>Enter a topic above to begin deep analysis and understanding</p>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">📚</div>
+            <div class="feature-text">Structured Analysis</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <div class="feature-text">Visual Diagrams</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔗</div>
+            <div class="feature-text">Module Integration</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">✅</div>
+            <div class="feature-text">Verified Sources</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loading-state" class="loading-state hidden">
+        <div class="spinner"></div>
+        <p>Analyzing topic...</p>
+      </div>
+
+      <!-- Research Results -->
+      <div id="research-results" class="research-results hidden">
+        <!-- Topic Header -->
+        <div class="topic-header">
+          <h2 id="topic-title" class="topic-title"></h2>
+          <div class="topic-actions">
+            <button id="export-btn" class="action-btn" data-testid="export-btn">
+              📤 Export
+            </button>
+            <button id="save-all-btn" class="action-btn" data-testid="save-all-btn">
+              💾 Save All to Notes
+            </button>
+          </div>
+        </div>
+
+        <!-- Source Info -->
+        <div id="source-info" class="source-info">
+          <span class="source-badge">📖 Wikipedia</span>
+          <span id="confidence-level" class="confidence-badge">✓ Verified</span>
+          <span id="last-updated" class="update-badge"></span>
+        </div>
+
+        <!-- Content Sections -->
+        <div id="content-sections" class="content-sections">
+          <!-- Definition Section -->
+          <div class="content-section" id="definition-section">
+            <div class="section-header">
+              <h3>📖 Definition</h3>
+              <button class="section-action save-section" data-section="definition" data-testid="save-definition">
+                💾 Save to Notes
+              </button>
+            </div>
+            <div class="section-content" id="definition-content"></div>
+          </div>
+
+          <!-- Key Concepts Section -->
+          <div class="content-section" id="concepts-section">
+            <div class="section-header">
+              <h3>🔑 Key Concepts</h3>
+              <button class="section-action save-section" data-section="concepts" data-testid="save-concepts">
+                💾 Save to Notes
+              </button>
+            </div>
+            <div class="section-content" id="concepts-content"></div>
+          </div>
+
+          <!-- Timeline Section -->
+          <div class="content-section" id="timeline-section" style="display:none;">
+            <div class="section-header">
+              <h3>📅 Timeline</h3>
+              <button class="section-action save-section" data-section="timeline" data-testid="save-timeline">
+                💾 Save to Notes
+              </button>
+            </div>
+            <div class="section-content timeline-content" id="timeline-content"></div>
+          </div>
+
+          <!-- Visual Explain Section -->
+          <div class="content-section" id="visual-section" style="display:none;">
+            <div class="section-header">
+              <h3>📊 Visual Explanation</h3>
+              <button class="section-action save-section" data-section="visual" data-testid="save-visual">
+                💾 Save to Notes
+              </button>
+            </div>
+            <div class="section-content" id="visual-content"></div>
+          </div>
+
+          <!-- Related Topics Section -->
+          <div class="content-section" id="related-section">
+            <div class="section-header">
+              <h3>🔗 Related Topics</h3>
+            </div>
+            <div class="section-content" id="related-content"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Modal -->
+  <div id="export-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Export Research</h3>
+        <button class="close-modal" data-modal="export-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="export-options">
+          <button class="export-option" data-format="notes" data-testid="export-notes">
+            📝 Study Notes
+          </button>
+          <button class="export-option" data-format="cards" data-testid="export-cards">
+            🗂️ Summary Cards
+          </button>
+          <button class="export-option" data-format="bullets" data-testid="export-bullets">
+            • Bullet Points
+          </button>
+        </div>
+        <textarea id="export-preview" class="export-preview" readonly></textarea>
+        <button id="copy-export" class="btn-primary" data-testid="copy-export-btn">📋 Copy to Clipboard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="services/sourceResolver.js"></script>
+  <script src="services/topicParser.js"></script>
+  <script src="services/summaryEngine.js"></script>
+  <script src="integrations/notesBridge.js"></script>
+  <script src="integrations/globeBridge.js"></script>
+  <script src="integrations/omniSearchBridge.js"></script>
+  <script src="factLens.js"></script>
+</body>
+</html>

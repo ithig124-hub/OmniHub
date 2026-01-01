@@ -1,34 +1,22 @@
 // =======================
-// OMNIHUB RENDERER - REFACTORED
-// Uses core navigation system for cyclical module management
+// OMNIHUB RENDERER - V3
+// Uses core navigation system + category dashboards
 // =======================
 
-console.log('🚀 OmniHub Renderer Starting (Enhanced)...');
-
-// Load core systems
-let NavigationController;
-let InputHandler;
-let LoadingController;
-
-// Check if we're in a module system environment
-if (typeof require !== 'undefined') {
-  try {
-    NavigationController = require('./core/navigation.js');
-    InputHandler = require('./core/input.js');
-    LoadingController = require('./core/loading.js');
-  } catch (e) {
-    console.log('Loading core systems via script tags...');
-  }
-}
+console.log('🚀 OmniHub Renderer Starting (V3)...');
 
 // =======================
 // MODULE CONFIGURATION
 // =======================
 const MODULES = [
   { id: 'map', name: 'Map', icon: '🗺️', path: './modules/map/map.html' },
+  { id: 'globe', name: 'Globe', icon: '🌍', path: './modules/globe/globe.html' },
   { id: 'notes', name: 'Notes', icon: '📝', path: './modules/notes/notes.html' },
   { id: 'library', name: 'Library', icon: '📚', path: './modules/library/library.html' },
   { id: 'search', name: 'Search', icon: '🔍', path: './modules/search/search.html' },
+  { id: 'studyVault', name: 'Study Vault', icon: '🎓', path: './modules/studyVault/studyVault.html' },
+  { id: 'factLens', name: 'FactLens', icon: '🔬', path: './modules/factLens/factLens.html' },
+  { id: 'snackScout', name: 'SnackScout', icon: '🍿', path: './modules/snackScout/snackScout.html' },
   { id: 'dashboard', name: 'Dashboard', icon: '📊', path: './modules/dashboard/dashboard.html' },
   { id: 'tracking', name: 'Tracking', icon: '📍', path: './modules/tracking/tracking.html' },
   { id: 'theme', name: 'Theme', icon: '🎨', path: './modules/theme/theme.html' }
@@ -40,6 +28,7 @@ const MODULES = [
 let navigationController;
 let inputHandler;
 let loadingController;
+let dashboardRouter; // V3: Dashboard routing system
 
 // =======================
 // DOM ELEMENTS
@@ -84,16 +73,34 @@ function init() {
     }
     
     // Initialize navigation controller
+    console.log('🔧 Attempting to initialize NavigationController...');
+    console.log('🔧 window.NavigationController exists?', typeof window.NavigationController !== 'undefined');
+    
     try {
       if (typeof window.NavigationController !== 'undefined') {
         navigationController = new window.NavigationController(MODULES);
+        console.log('✅ NavigationController initialized with modules:', MODULES.map(m => m.id));
       } else {
+        console.error('❌ window.NavigationController is undefined!');
         // Fallback: Create simple navigation object
         navigationController = createFallbackNavigation();
+        console.log('⚠️ Using fallback navigation');
       }
     } catch (navErr) {
+      console.error('❌ NavigationController init failed with error:', navErr);
       console.warn('⚠️ NavigationController init failed, using fallback:', navErr);
       navigationController = createFallbackNavigation();
+    }
+    
+    // V3: Initialize Dashboard Router
+    try {
+      if (typeof window.DashboardRouter !== 'undefined' && typeof window.CATEGORY_DASHBOARDS !== 'undefined') {
+        dashboardRouter = new window.DashboardRouter(navigationController);
+        dashboardRouter.setDashboards(window.CATEGORY_DASHBOARDS);
+        console.log('🧭 Dashboard Router initialized with V3 categories');
+      }
+    } catch (dashErr) {
+      console.warn('⚠️ Dashboard Router init failed (continuing without dashboards):', dashErr);
     }
     
     // Setup event listeners
@@ -118,8 +125,9 @@ function init() {
       console.warn('⚠️ InputHandler init failed:', inputErr);
     }
     
-    // Load initial module (Notes - lighter module for faster startup)
-    loadModule(1, 'init');
+    // V3: Load Search module (OmniSearch) as entry point
+    console.log('🔍 V3 Mode: Loading Search module as entry point');
+    loadModule(4, 'init'); // Search is at index 4
     
     console.log('✅ OmniHub Navigation Engine initialized successfully!');
   } catch (error) {
@@ -187,8 +195,8 @@ function setupDirectKeyboardNavigation() {
       if (result.success) loadModule(result.index, 'prev');
     }
     
-    // Number keys 1-7 for direct module access
-    if (e.key >= '1' && e.key <= '7' && !e.ctrlKey && !e.altKey) {
+    // Number keys 1-9 for direct module access
+    if (e.key >= '1' && e.key <= '9' && !e.ctrlKey && !e.altKey) {
       const idx = parseInt(e.key) - 1;
       if (idx < MODULES.length && idx !== navigationController.getCurrentIndex()) {
         const result = navigationController.jumpTo(idx);
@@ -196,7 +204,7 @@ function setupDirectKeyboardNavigation() {
       }
     }
   });
-  console.log('⌨️ Direct keyboard navigation enabled (Ctrl+Arrow, 1-7 keys)');
+  console.log('⌨️ Direct keyboard navigation enabled (Ctrl+Arrow, 1-9 keys)');
 }
 
 // =======================
@@ -263,29 +271,37 @@ function createNavigationBar() {
 }
 
 // =======================
-// MODULE DROPDOWN (Click module name to open)
+// CATEGORY DROPDOWN (V3 - Shows standalone modules + categories)
 // =======================
+let dropdownEventListenersAttached = false;
+
 function createModuleDropdown() {
   if (!moduleDropdown || !moduleTitle) return;
   
   moduleDropdown.innerHTML = '';
   
-  MODULES.forEach((module, index) => {
+  // Add standalone modules first (Advanced Search and Dashboard)
+  const standaloneModules = [
+    { id: 'search', name: 'Advanced Search', icon: '🔍', index: 4 },
+    { id: 'dashboard', name: 'Dashboard', icon: '📊', index: 8 }
+  ];
+  
+  standaloneModules.forEach(module => {
     const item = document.createElement('div');
-    item.className = 'dropdown-item' + (index === 1 ? ' active' : '');
+    item.className = 'dropdown-item';
     item.setAttribute('data-module-id', module.id);
-    item.setAttribute('data-index', index);
+    item.setAttribute('data-index', module.index);
     item.innerHTML = `
       <span class="dropdown-item-icon">${module.icon}</span>
       <span>${module.name}</span>
     `;
     
-    item.addEventListener('click', () => {
-      if (index !== navigationController.getCurrentIndex()) {
-        const result = navigationController.jumpTo(index);
-        if (result.success) {
-          loadModule(result.index, 'jump');
-        }
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      console.log(`🎯 Dropdown: Navigating to ${module.name}`);
+      const result = navigationController.jumpTo(module.index);
+      if (result.success) {
+        loadModule(result.index, 'jump');
       }
       toggleDropdown(false);
     });
@@ -293,39 +309,77 @@ function createModuleDropdown() {
     moduleDropdown.appendChild(item);
   });
   
-  // Click on title to toggle dropdown
-  moduleTitle.addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggleDropdown();
-  });
+  // Add separator
+  const separator = document.createElement('div');
+  separator.style.cssText = 'height: 1px; background: rgba(255,255,255,0.2); margin: 8px 0;';
+  moduleDropdown.appendChild(separator);
   
-  // Close dropdown when clicking outside
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('#module-title-container')) {
-      toggleDropdown(false);
-    }
-  });
+  // Add category dashboards
+  if (typeof window.CATEGORY_DASHBOARDS !== 'undefined') {
+    window.CATEGORY_DASHBOARDS.forEach((dashboard, index) => {
+      const item = document.createElement('div');
+      item.className = 'dropdown-item';
+      item.setAttribute('data-dashboard-id', dashboard.id);
+      item.setAttribute('data-index', index);
+      item.innerHTML = `
+        <span class="dropdown-item-icon">${dashboard.icon}</span>
+        <span>${dashboard.name}</span>
+      `;
+      
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        loadDashboard(index, 'jump');
+        toggleDropdown(false);
+      });
+      
+      moduleDropdown.appendChild(item);
+    });
+    console.log('📍 Dropdown created: 2 standalone modules + category dashboards');
+  }
   
-  // Close dropdown on escape key
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      toggleDropdown(false);
-    }
-  });
-  
-  console.log('📍 Module dropdown created');
+  // Attach event listeners only once
+  if (!dropdownEventListenersAttached) {
+    // Click on title to toggle dropdown
+    moduleTitle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      console.log('🖱️ Module title clicked, toggling dropdown');
+      toggleDropdown();
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#module-title-container')) {
+        toggleDropdown(false);
+      }
+    });
+    
+    // Close dropdown on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        toggleDropdown(false);
+      }
+    });
+    
+    dropdownEventListenersAttached = true;
+    console.log('📍 Dropdown event listeners attached');
+  }
 }
 
 function toggleDropdown(show) {
-  if (!moduleDropdown || !moduleTitle) return;
+  if (!moduleDropdown || !moduleTitle) {
+    console.warn('⚠️ Dropdown elements not found');
+    return;
+  }
   
   const isHidden = moduleDropdown.classList.contains('hidden');
   if (show === undefined) show = isHidden;
   
   if (show) {
+    console.log('📂 Opening dropdown');
     moduleDropdown.classList.remove('hidden');
     moduleTitle.classList.add('open');
   } else {
+    console.log('📁 Closing dropdown');
     moduleDropdown.classList.add('hidden');
     moduleTitle.classList.remove('open');
   }
@@ -413,6 +467,18 @@ function createModuleIframe(module, direction, index) {
   iframe.onload = () => {
     console.log(`✅ Module ${module.name} iframe loaded`);
     
+    // Apply global theme to iframe module
+    if (window.GlobalTheme) {
+      setTimeout(() => {
+        try {
+          window.GlobalTheme.applyToIframe(iframe);
+          console.log('🎨 Global theme applied to iframe module');
+        } catch (e) {
+          console.warn('Could not apply theme to iframe:', e);
+        }
+      }, 100);
+    }
+    
     // Hide loading after a short delay to ensure content is rendered
     setTimeout(() => {
       if (loadingController) {
@@ -452,6 +518,7 @@ function createModuleIframe(module, direction, index) {
   return iframe;
 }
 
+
 function applyTransition(element, direction) {
   // Remove any existing transition classes
   element.classList.remove(
@@ -471,25 +538,130 @@ function applyTransition(element, direction) {
 }
 
 // =======================
+// DASHBOARD LOADING (V3)
+// =======================
+function loadDashboard(index, direction = 'jump') {
+  if (!window.CATEGORY_DASHBOARDS || index < 0 || index >= window.CATEGORY_DASHBOARDS.length) {
+    console.warn('⚠️ Category dashboards not available or invalid index');
+    return;
+  }
+  
+  const dashboard = window.CATEGORY_DASHBOARDS[index];
+  
+  console.log(`🧭 Loading dashboard: ${dashboard.name} (${index}) [${direction}]`);
+  
+  // Show loading
+  if (loadingController) {
+    loadingController.show(dashboard.name);
+  }
+  
+  // Create iframe for dashboard
+  createDashboardIframe(dashboard, direction, index);
+}
+
+function createDashboardIframe(dashboard, direction, index) {
+  // Remove old content
+  const oldIframe = moduleContainer.querySelector('.module-iframe');
+  if (oldIframe) {
+    oldIframe.remove();
+  }
+  
+  // Create iframe for dashboard
+  const iframe = document.createElement('iframe');
+  iframe.className = 'module-iframe hw-accelerated';
+  iframe.setAttribute('data-dashboard-id', dashboard.id);
+  iframe.setAttribute('data-testid', `dashboard-${dashboard.id}`);
+  
+  // Apply transition
+  applyTransition(iframe, direction);
+  
+  // Handle iframe load
+  iframe.onload = () => {
+    console.log(`✅ Dashboard ${dashboard.name} iframe loaded`);
+    
+    // Apply global theme to iframe
+    if (window.GlobalTheme) {
+      setTimeout(() => {
+        try {
+          window.GlobalTheme.applyToIframe(iframe);
+          console.log('🎨 Global theme applied to dashboard iframe');
+        } catch (e) {
+          console.warn('Could not apply theme to iframe:', e);
+        }
+      }, 100);
+    }
+    
+    // Hide loading after a short delay
+    setTimeout(() => {
+      if (loadingController) {
+        loadingController.hide();
+      }
+      updateDashboardUI(dashboard, index);
+    }, 200);
+  };
+  
+  // Handle iframe error
+  iframe.onerror = (error) => {
+    console.error('❌ Dashboard iframe error:', error);
+    if (loadingController) {
+      loadingController.forceHide();
+    }
+    showError(`Failed to load ${dashboard.name}`, 'Dashboard failed to load');
+  };
+  
+  // Add to container
+  moduleContainer.appendChild(iframe);
+  
+  // Set src to load dashboard
+  iframe.src = dashboard.path;
+  
+  // Fallback timeout
+  setTimeout(() => {
+    if (loadingController && loadingController.isLoading()) {
+      console.log(`⚡ Fallback timeout: force hiding loading for ${dashboard.name}`);
+      loadingController.forceHide();
+      updateDashboardUI(dashboard, index);
+    }
+  }, 5000);
+  
+  return iframe;
+}
+
+function updateDashboardUI(dashboard, index) {
+  // Update title with dropdown arrow
+  if (moduleTitle) {
+    moduleTitle.innerHTML = `${dashboard.icon} ${dashboard.name} <span class="dropdown-arrow">▼</span>`;
+  }
+  
+  // Recreate dropdown to include standalone modules
+  createModuleDropdown();
+  
+  console.log(`🧭 Dashboard UI updated: ${dashboard.name}`);
+}
+
+
+// =======================
 // UI UPDATES
 // =======================
 function updateUI(module, index) {
+  // Get module from MODULES array if null
+  if (!module && typeof index === 'number') {
+    module = MODULES[index];
+  }
+  
+  // Safety check
+  if (!module) {
+    console.warn('⚠️ updateUI: No valid module provided');
+    return;
+  }
+  
   // Update title with dropdown arrow
   if (moduleTitle) {
     moduleTitle.innerHTML = `${module.icon} ${module.name} <span class="dropdown-arrow">▼</span>`;
   }
   
-  // Update dropdown items
-  if (moduleDropdown) {
-    const dropdownItems = moduleDropdown.querySelectorAll('.dropdown-item');
-    dropdownItems.forEach((item, i) => {
-      if (i === index) {
-        item.classList.add('active');
-      } else {
-        item.classList.remove('active');
-      }
-    });
-  }
+  // Recreate dropdown to ensure standalone modules are always available
+  createModuleDropdown();
   
   // Update navigation buttons (hidden but kept for compatibility)
   if (navBar) {
@@ -541,22 +713,41 @@ window.OmniHub = {
   getCurrentModule: () => navigationController.getCurrentModule(),
   getAllModules: () => navigationController.getAllModules(),
   navigateToModule: (moduleId) => {
-    const result = navigationController.jumpTo(moduleId);
-    if (result.success) {
-      loadModule(result.index, 'jump');
+    console.log('🎯 Navigating to:', moduleId);
+    
+    // Simple: just find the module index and load it
+    const moduleIndex = MODULES.findIndex(m => m.id === moduleId);
+    
+    if (moduleIndex === -1) {
+      console.error('❌ Module not found:', moduleId);
+      return;
     }
+    
+    console.log('✅ Found module at index:', moduleIndex);
+    
+    // Force reset transition state
+    navigationController.isTransitioning = false;
+    
+    // Update navigation controller state
+    navigationController.currentIndex = moduleIndex;
+    navigationController.currentModule = MODULES[moduleIndex];
+    
+    // Load the module directly
+    loadModule(moduleIndex, 'jump');
   },
   next: () => {
-    const result = navigationController.next();
-    if (result.success) {
-      loadModule(result.index, 'next');
-    }
+    const nextIndex = (navigationController.currentIndex + 1) % MODULES.length;
+    navigationController.isTransitioning = false;
+    navigationController.currentIndex = nextIndex;
+    navigationController.currentModule = MODULES[nextIndex];
+    loadModule(nextIndex, 'next');
   },
   previous: () => {
-    const result = navigationController.previous();
-    if (result.success) {
-      loadModule(result.index, 'prev');
-    }
+    const prevIndex = (navigationController.currentIndex - 1 + MODULES.length) % MODULES.length;
+    navigationController.isTransitioning = false;
+    navigationController.currentIndex = prevIndex;
+    navigationController.currentModule = MODULES[prevIndex];
+    loadModule(prevIndex, 'prev');
   },
   
   // Data persistence methods

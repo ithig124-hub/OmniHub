@@ -403,11 +403,23 @@ class NotesUI {
         this.elements.noteModified = document.getElementById('note-modified');
         this.elements.tagsInput = document.getElementById('tags-input');
         this.elements.tagsDisplay = document.getElementById('tags-display');
+        this.elements.wordCount = document.getElementById('word-count');
+        this.elements.autoSave = document.getElementById('auto-save');
         
         // Actions
         this.elements.pinNoteBtn = document.getElementById('pin-note-btn');
         this.elements.linkNoteBtn = document.getElementById('link-note-btn');
         this.elements.deleteNoteBtn = document.getElementById('delete-note-btn');
+        
+        // Toolbar
+        this.elements.btnBold = document.getElementById('btn-bold');
+        this.elements.btnItalic = document.getElementById('btn-italic');
+        this.elements.btnHeading = document.getElementById('btn-heading');
+        this.elements.btnList = document.getElementById('btn-list');
+        this.elements.btnCheckbox = document.getElementById('btn-checkbox');
+        this.elements.btnLink = document.getElementById('btn-link');
+        this.elements.btnCode = document.getElementById('btn-code');
+        this.elements.btnExport = document.getElementById('btn-export');
         
         // Modal
         this.elements.linkModal = document.getElementById('link-modal');
@@ -438,7 +450,10 @@ class NotesUI {
         
         // Editor
         this.elements.noteTitle.addEventListener('input', () => this.handleTitleChange());
-        this.elements.noteEditor.addEventListener('input', () => this.handleContentChange());
+        this.elements.noteEditor.addEventListener('input', () => {
+            this.handleContentChange();
+            this.updateWordCount();
+        });
         
         // Tags
         this.elements.tagsInput.addEventListener('keypress', (e) => {
@@ -452,6 +467,29 @@ class NotesUI {
         this.elements.pinNoteBtn.addEventListener('click', () => this.handlePinNote());
         this.elements.linkNoteBtn.addEventListener('click', () => this.showLinkModal());
         this.elements.deleteNoteBtn.addEventListener('click', () => this.handleDeleteNote());
+        
+        // Toolbar
+        if (this.elements.btnBold) this.elements.btnBold.addEventListener('click', () => this.insertFormatting('**', '**', 'bold text'));
+        if (this.elements.btnItalic) this.elements.btnItalic.addEventListener('click', () => this.insertFormatting('*', '*', 'italic text'));
+        if (this.elements.btnHeading) this.elements.btnHeading.addEventListener('click', () => this.insertAtLineStart('## ', 'Heading'));
+        if (this.elements.btnList) this.elements.btnList.addEventListener('click', () => this.insertAtLineStart('- ', 'List item'));
+        if (this.elements.btnCheckbox) this.elements.btnCheckbox.addEventListener('click', () => this.insertAtLineStart('- [ ] ', 'Task'));
+        if (this.elements.btnLink) this.elements.btnLink.addEventListener('click', () => this.insertFormatting('[', '](url)', 'link text'));
+        if (this.elements.btnCode) this.elements.btnCode.addEventListener('click', () => this.insertFormatting('```\\n', '\\n```', 'code'));
+        if (this.elements.btnExport) this.elements.btnExport.addEventListener('click', () => this.exportNote());
+        
+        // Keyboard shortcuts
+        this.elements.noteEditor.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 'b') {
+                    e.preventDefault();
+                    this.insertFormatting('**', '**', 'bold text');
+                } else if (e.key === 'i') {
+                    e.preventDefault();
+                    this.insertFormatting('*', '*', 'italic text');
+                }
+            }
+        });
         
         // Modal
         this.elements.closeLinkModal.addEventListener('click', () => this.hideLinkModal());
@@ -611,6 +649,9 @@ class NotesUI {
         this.elements.noteCreated.textContent = `Created: ${this.formatDate(note.created)}`;
         this.elements.noteModified.textContent = `Modified: ${this.formatDate(note.modified)}`;
         
+        // Update word count
+        this.updateWordCount();
+        
         // Update pin button
         if (note.pinned) {
             this.elements.pinNoteBtn.classList.add('active');
@@ -704,6 +745,9 @@ class NotesUI {
         this.autoSaveTimeout = setTimeout(async () => {
             const content = this.elements.noteEditor.value;
             await this.manager.updateNote(this.manager.currentNote.id, { content });
+            
+            // Show auto-save indicator
+            this.showAutoSaveIndicator();
             
             // Parse and create internal links
             const linkedTitles = this.manager.parseInternalLinks(content);
@@ -906,6 +950,93 @@ class NotesUI {
         div.textContent = text;
         return div.innerHTML;
     }
+    
+    // ===== NEW UTILITY METHODS =====
+    
+    insertFormatting(before, after, placeholder) {
+        const textarea = this.elements.noteEditor;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selectedText = textarea.value.substring(start, end);
+        const text = selectedText || placeholder;
+        const replacement = before + text + after;
+        
+        textarea.value = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
+        
+        // Set cursor position
+        const newCursorPos = start + before.length;
+        textarea.setSelectionRange(newCursorPos, newCursorPos + text.length);
+        textarea.focus();
+        
+        this.handleContentChange();
+    }
+    
+    insertAtLineStart(prefix, placeholder) {
+        const textarea = this.elements.noteEditor;
+        const start = textarea.selectionStart;
+        const text = textarea.value;
+        
+        // Find the start of the current line
+        let lineStart = text.lastIndexOf('\\n', start - 1) + 1;
+        
+        // Insert prefix at line start
+        const newText = text.substring(0, lineStart) + prefix + text.substring(lineStart);
+        textarea.value = newText;
+        
+        // Set cursor position after prefix
+        textarea.setSelectionRange(lineStart + prefix.length, lineStart + prefix.length);
+        textarea.focus();
+        
+        this.handleContentChange();
+    }
+    
+    updateWordCount() {
+        if (!this.manager.currentNote || !this.elements.wordCount) return;
+        
+        const content = this.elements.noteEditor.value;
+        const words = content.trim().split(/\\s+/).filter(w => w.length > 0).length;
+        const chars = content.length;
+        const readingTime = Math.ceil(words / 200); // Average reading speed: 200 words/min
+        
+        this.elements.wordCount.innerHTML = `
+            <svg width=\"12\" height=\"12\" viewBox=\"0 0 16 16\" fill=\"none\">
+                <path d=\"M2 4H14M2 8H14M2 12H8\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/>
+            </svg>
+            ${words} words • ${chars} chars • ${readingTime} min read
+        `;
+    }
+    
+    showAutoSaveIndicator() {
+        if (!this.elements.autoSave) return;
+        
+        this.elements.autoSave.classList.add('show');
+        setTimeout(() => {
+            this.elements.autoSave.classList.remove('show');
+        }, 2000);
+    }
+    
+    exportNote() {
+        if (!this.manager.currentNote) {
+            alert('No note selected to export!');
+            return;
+        }
+        
+        const note = this.manager.currentNote;
+        const content = `# ${note.title}\\n\\n${note.content}\\n\\n---\\nTags: ${note.tags.join(', ')}\\nCreated: ${this.formatDate(note.created)}\\nModified: ${this.formatDate(note.modified)}`;
+        
+        // Create download
+        const blob = new Blob([content], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${note.title.replace(/[^a-z0-9]/gi, '_')}.md`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        console.log('✅ Note exported successfully');
+    }
 }
 
 // ===== DataStore Integration =====
@@ -975,6 +1106,70 @@ window.notesModule = {
         }
         // Sync to DataStore
         syncNotesToDataStore();
+        
+        // Check for pending Wikipedia import
+        try {
+            const pendingImport = localStorage.getItem('omnihub_pending_note_import');
+            if (pendingImport) {
+                const importData = JSON.parse(pendingImport);
+                
+                // Check if it's recent (within 10 seconds)
+                if (Date.now() - importData.timestamp < 10000) {
+                    console.log('📥 Importing Wikipedia content to Notes');
+                    
+                    // Clear the pending import
+                    localStorage.removeItem('omnihub_pending_note_import');
+                    
+                    // Create the note
+                    if (notesManager && notesManager.initialized) {
+                        setTimeout(async () => {
+                            const note = await notesManager.createNote(importData.title);
+                            await notesManager.updateNote(note.id, {
+                                content: importData.content,
+                                tags: importData.tags || ['wikipedia', 'imported']
+                            });
+                            
+                            // Refresh UI and load the new note
+                            await notesUI.render();
+                            await notesUI.loadNote(note.id);
+                            
+                            // Show a success notification
+                            console.log('✅ Wikipedia content imported successfully');
+                        }, 500);
+                    }
+                } else {
+                    // Clear old pending import
+                    localStorage.removeItem('omnihub_pending_note_import');
+                }
+            }
+        } catch (e) {
+            console.warn('Failed to process pending import:', e);
+        }
+        
+        // Check for highlight item from search
+        try {
+            const highlightData = localStorage.getItem('omnihub_highlight_item');
+            if (highlightData) {
+                const highlight = JSON.parse(highlightData);
+                
+                // Check if it's for this module and recent (within 5 seconds)
+                if (highlight.module === 'notes' && (Date.now() - highlight.timestamp < 5000)) {
+                    console.log('🎯 Highlighting note from search:', highlight);
+                    
+                    // Clear the highlight data
+                    localStorage.removeItem('omnihub_highlight_item');
+                    
+                    // Load the specific note
+                    if (highlight.itemId && notesUI) {
+                        setTimeout(() => {
+                            notesUI.loadNote(highlight.itemId);
+                        }, 500);
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('Failed to process highlight data:', e);
+        }
     },
     
     onDeactivate: () => {

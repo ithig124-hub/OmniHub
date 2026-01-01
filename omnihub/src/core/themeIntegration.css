@@ -1,0 +1,309 @@
+/* =======================
+   GLOBAL THEME STYLES
+   Applied across ALL OmniHub modules
+   ======================= */
+
+:root {
+  /* Theme Variables (set by GlobalThemeManager) */
+  --theme-mode: dark;
+  --theme-primary: #667eea;
+  --theme-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #3d5ca3 100%);
+  --glass-opacity: 0.15;
+  --glass-blur: 10px;
+  --glow-opacity: 0.2;
+  --border-radius: 12px;
+  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --transition-speed: 0.3s;
+  
+  /* Derived Colors */
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-muted: rgba(255, 255, 255, 0.5);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Light Mode Overrides */
+[data-theme="light"] {
+  --text-primary: rgba(0, 0, 0, 0.95);
+  --text-secondary: rgba(0, 0, 0, 0.7);
+  --text-muted: rgba(0, 0, 0, 0.5);
+  --border-color: rgba(0, 0, 0, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+/* =======================
+   GLOBAL BASE STYLES
+   ======================= */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  background: var(--theme-gradient);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+/* =======================
+   GLASSMORPHISM COMPONENTS
+   ======================= */
+
+.glass-panel,
+.glass-modal,
+.glass-card {
+  background: rgba(255, 255, 255, var(--glass-opacity));
+  backdrop-filter: blur(var(--glass-blur));
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-speed) ease;
+}
+
+.glass-panel:hover,
+.glass-card:hover {
+  background: rgba(255, 255, 255, calc(var(--glass-opacity) + 0.05));
+  box-shadow: 0 8px 32px 0 var(--shadow-color);
+}
+
+/* =======================
+   BUTTONS
+   ======================= */
+
+.btn,
+button {
+  background: var(--theme-primary);
+  color: white;
+  border: none;
+  border-radius: calc(var(--border-radius) - 4px);
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  font-family: var(--font-family);
+}
+
+.btn:hover,
+button:hover {
+  filter: brightness(1.2);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, var(--glow-opacity));
+  transform: translateY(-2px);
+}
+
+.btn:active,
+button:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
+}
+
+.btn-danger {
+  background: #e74c3c;
+}
+
+/* =======================
+   INPUTS
+   ======================= */
+
+input[type="text"],
+input[type="search"],
+input[type="number"],
+textarea {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
+  border-radius: calc(var(--border-radius) - 4px);
+  padding: 10px 15px;
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  transition: all var(--transition-speed) ease;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--theme-primary);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+/* =======================
+   MODALS
+   ======================= */
+
+.glass-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  max-width: 90%;
+  max-height: 90%;
+  overflow: auto;
+  padding: 30px;
+}
+
+.glass-modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-body {
+  padding: 15px 0;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all var(--transition-speed) ease;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* =======================
+   SCROLLBARS
+   ======================= */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--theme-primary);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 126, 234, 0.8);
+}
+
+/* =======================
+   ANIMATIONS
+   ======================= */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.fade-in {
+  animation: fadeIn var(--transition-speed) ease;
+}
+
+/* =======================
+   UTILITY CLASSES
+   ======================= */
+
+.hidden {
+  display: none !important;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* =======================
+   RESPONSIVE
+   ======================= */
+
+@media (max-width: 768px) {
+  .glass-modal {
+    max-width: 95%;
+    padding: 20px;
+  }
+  
+  :root {
+    --border-radius: 10px;
+  }
+}

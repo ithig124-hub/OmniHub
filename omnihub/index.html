@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" 
+          content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:;">
+    <title>OmniHub V2</title>
+    
+    <!-- Theme System CSS (Load First) -->
+    <link rel="stylesheet" href="src/core/themeIntegration.css">
+    <link rel="stylesheet" href="src/styles/global.css">
+    <link rel="stylesheet" href="src/core/transitions.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #1a1a1a;
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        #app {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease;
+        }
+
+        #loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #00ff88;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        #module-container {
+            flex: 1;
+            width: 100%;
+            height: calc(100vh - 60px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .module-view.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        #navigation-bar {
+            height: 60px;
+            background: #242424;
+            border-top: 2px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            padding: 0 40px;
+        }
+
+        .nav-item {
+            padding: 10px 20px;
+            background: #2a2a2a;
+            border: 2px solid #3a3a3a;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item:hover {
+            background: #333;
+            border-color: #00ff88;
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active {
+            background: #00ff88;
+            color: #1a1a1a;
+            border-color: #00ff88;
+        }
+
+        .cycle-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid #00ff88;
+            color: #00ff88;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="loader"></div>
+    </div>
+
+    <div id="app">
+        <div class="cycle-indicator" id="cycle-indicator">Loading...</div>
+        
+        <div id="module-container">
+            <div id="map-module" class="module-view" data-module="map"></div>
+            <div id="globe-module" class="module-view" data-module="globe"></div>
+            <div id="search-module" class="module-view" data-module="search"></div>
+            <div id="notes-module" class="module-view" data-module="notes"></div>
+            <div id="snackScout-module" class="module-view" data-module="snackScout"></div>
+            <div id="dashboard-module" class="module-view" data-module="dashboard"></div>
+            <div id="theme-module" class="module-view" data-module="theme"></div>
+        </div>
+
+        <div id="navigation-bar"></div>
+    </div>
+
+    <!-- Theme System -->
+    <script src="src/core/globalTheme.js"></script>
+    
+    <!-- Core Systems -->
+    <script type="module" src="src/core/dataStore.js"></script>
+    <script type="module" src="src/core/input.js"></script>
+    <script type="module" src="src/core/loading.js"></script>
+    <script type="module" src="src/core/navigation.js"></script>
+
+    <!-- Modules -->
+    <script type="module" src="src/modules/map/map.js"></script>
+    <script type="module" src="src/modules/globe/globe.js"></script>
+    <script type="module" src="src/modules/search/search.js"></script>
+    <script type="module" src="src/modules/notes/notes.js"></script>
+    <script type="module" src="src/modules/snackScout/snackScout.js"></script>
+    <script type="module" src="src/modules/dashboard/dashboard.js"></script>
+    <script type="module" src="src/modules/theme/theme.js"></script>
+
+    <!-- Main Renderer -->
+    <script type="module" src="src/renderer.js"></script>
+</body>
+</html>

@@ -44,58 +44,122 @@ const THEME_CONFIG = {
     aurora: 'linear-gradient(135deg, #43cea2 0%, #185a9d 100%)',
     space: 'linear-gradient(135deg, #000428 0%, #004e92 100%)',
     professional: 'linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #3d566e 100%)',
-    hacker: 'linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%)'
+    hacker: 'linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%)',
+    midnight: 'linear-gradient(135deg, #2c3e50 0%, #3498db 50%, #2980b9 100%)',
+    matrix: 'linear-gradient(135deg, #0d1117 0%, #161b22 50%, #21262d 100%)',
+    neon: 'linear-gradient(135deg, #ff00ff 0%, #00ffff 50%, #ff00ff 100%)',
+    mono: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #dee2e6 100%)'
   },
   PRESETS: {
     professional: {
-      mode: 'professional',
-      accentColor: '#3498db',
-      gradient: 'professional',
-      blurIntensity: 8,
-      glassOpacity: 10,
-      glowOpacity: 10,
-      motionSpeed: 8,
-      grainAmount: 0,
+      mode: 'dark',
+      accentColor: '#3b82f6',
+      gradient: 'midnight',
+      blurIntensity: 12,
+      glassOpacity: 15,
+      glowOpacity: 20,
+      motionSpeed: 30,
+      grainAmount: 5,
       scenery: 'none',
+      videoScenery: false,
       reduceMotion: false,
       smoothTransitions: true
     },
     creative: {
-      mode: 'auto',
-      accentColor: '#e74c3c',
+      mode: 'dark',
+      accentColor: '#ec4899',
       gradient: 'sunset',
-      blurIntensity: 15,
-      glassOpacity: 20,
-      glowOpacity: 30,
-      motionSpeed: 12,
-      grainAmount: 5,
+      blurIntensity: 20,
+      glassOpacity: 25,
+      glowOpacity: 40,
+      motionSpeed: 50,
+      grainAmount: 10,
       scenery: 'particles',
+      videoScenery: false,
       reduceMotion: false,
       smoothTransitions: true
     },
     zen: {
-      mode: 'dark',
-      accentColor: '#27ae60',
+      mode: 'light',
+      accentColor: '#10b981',
       gradient: 'forest',
-      blurIntensity: 20,
-      glassOpacity: 12,
+      blurIntensity: 15,
+      glassOpacity: 20,
       glowOpacity: 15,
-      motionSpeed: 5,
-      grainAmount: 0,
+      motionSpeed: 20,
+      grainAmount: 3,
       scenery: 'waves',
+      videoScenery: false,
       reduceMotion: false,
       smoothTransitions: true
     },
     hacker: {
       mode: 'dark',
       accentColor: '#00ff00',
-      gradient: 'hacker',
+      gradient: 'matrix',
       blurIntensity: 5,
-      glassOpacity: 8,
-      glowOpacity: 25,
-      motionSpeed: 15,
-      grainAmount: 10,
+      glassOpacity: 10,
+      glowOpacity: 60,
+      motionSpeed: 70,
+      grainAmount: 20,
       scenery: 'rain',
+      videoScenery: false,
+      reduceMotion: false,
+      smoothTransitions: true
+    },
+    cyberpunk: {
+      mode: 'dark',
+      accentColor: '#ff00ff',
+      gradient: 'neon',
+      blurIntensity: 25,
+      glassOpacity: 30,
+      glowOpacity: 80,
+      motionSpeed: 60,
+      grainAmount: 15,
+      scenery: 'particles',
+      videoScenery: false,
+      reduceMotion: false,
+      smoothTransitions: true
+    },
+    ocean: {
+      mode: 'dark',
+      accentColor: '#0ea5e9',
+      gradient: 'ocean',
+      blurIntensity: 18,
+      glassOpacity: 22,
+      glowOpacity: 30,
+      motionSpeed: 35,
+      grainAmount: 8,
+      scenery: 'waves',
+      videoScenery: false,
+      reduceMotion: false,
+      smoothTransitions: true
+    },
+    minimal: {
+      mode: 'light',
+      accentColor: '#6b7280',
+      gradient: 'mono',
+      blurIntensity: 8,
+      glassOpacity: 12,
+      glowOpacity: 10,
+      motionSpeed: 15,
+      grainAmount: 0,
+      scenery: 'none',
+      videoScenery: false,
+      reduceMotion: true,
+      smoothTransitions: true
+    },
+    aurora: {
+      mode: 'dark',
+      accentColor: '#8b5cf6',
+      gradient: 'aurora',
+      blurIntensity: 22,
+      glassOpacity: 28,
+      glowOpacity: 50,
+      motionSpeed: 45,
+      grainAmount: 12,
+      scenery: 'stars',
+      videoScenery: false,
       reduceMotion: false,
       smoothTransitions: true
     }
@@ -134,7 +198,7 @@ function saveSettings() {
 }
 
 // ============================================
-// THEME APPLICATION
+// THEME APPLICATION (GLOBAL + LOCAL)
 // ============================================
 function applyTheme() {
   const root = document.documentElement;
@@ -170,6 +234,52 @@ function applyTheme() {
   
   // Update preview
   updatePreview();
+  
+  // 🎨 APPLY GLOBALLY TO PARENT AND ALL MODULES
+  applyThemeGlobally();
+}
+
+// ============================================
+// APPLY THEME GLOBALLY TO ALL MODULES
+// ============================================
+function applyThemeGlobally() {
+  try {
+    // Apply to parent window (main OmniHub)
+    if (window.parent && window.parent !== window) {
+      const parentGlobalTheme = window.parent.GlobalTheme;
+      
+      if (parentGlobalTheme && typeof parentGlobalTheme.updateTheme === 'function') {
+        // Update parent theme with our settings
+        parentGlobalTheme.updateTheme({
+          mode: themeSettings.mode,
+          accentColor: themeSettings.accentColor,
+          gradient: THEME_CONFIG.GRADIENTS[themeSettings.gradient],
+          blurIntensity: themeSettings.blurIntensity,
+          glassOpacity: themeSettings.glassOpacity / 100,
+          glowOpacity: themeSettings.glowOpacity / 100,
+          transitionSpeed: themeSettings.reduceMotion ? 0 : 0.1 + (themeSettings.motionSpeed / 50)
+        });
+        
+        console.log('✅ Theme applied globally to all modules!');
+        showNotification('✨ Theme applied to all modules!');
+        
+        // Force apply to all iframes
+        setTimeout(() => {
+          if (typeof parentGlobalTheme.applyToAllIframes === 'function') {
+            parentGlobalTheme.applyToAllIframes();
+          }
+        }, 100);
+      } else {
+        console.log('⚠️ Parent GlobalTheme not available, applying locally only');
+        showNotification('⚠️ Theme applied locally only');
+      }
+    } else {
+      console.log('ℹ️ Running standalone, no parent window');
+    }
+  } catch (e) {
+    console.warn('Could not apply theme globally:', e);
+    showNotification('⚠️ Theme update error');
+  }
 }
 
 function applyGrain(amount) {

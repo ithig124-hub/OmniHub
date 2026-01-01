@@ -340,6 +340,12 @@ function setupEventListeners() {
   document.getElementById('save-pin-btn').addEventListener('click', savePin);
   document.getElementById('cancel-pin-btn').addEventListener('click', closePinModal);
   document.getElementById('close-pins-btn').addEventListener('click', closePinsModal);
+  
+  // Dark mode toggle
+  document.getElementById('dark-mode-btn').addEventListener('click', toggleDarkMode);
+  
+  // Load dark mode preference
+  loadDarkModePreference();
 }
 
 // =======================
@@ -942,6 +948,42 @@ function goToLocation(lon, lat, name) {
   });
   
   console.log(`📍 Navigated to: ${name}`);
+}
+
+// =======================
+// DARK MODE
+// =======================
+
+function toggleDarkMode() {
+  const body = document.body;
+  const isDark = body.classList.toggle('dark-mode');
+  const darkModeText = document.getElementById('dark-mode-text');
+  const darkModeBtn = document.getElementById('dark-mode-btn');
+  
+  if (isDark) {
+    darkModeText.textContent = 'Light';
+    darkModeBtn.classList.add('active');
+    localStorage.setItem('omnihub_map_dark_mode', 'true');
+    console.log('🌙 Dark mode enabled');
+  } else {
+    darkModeText.textContent = 'Dark';
+    darkModeBtn.classList.remove('active');
+    localStorage.setItem('omnihub_map_dark_mode', 'false');
+    console.log('☀️ Light mode enabled');
+  }
+}
+
+function loadDarkModePreference() {
+  const darkMode = localStorage.getItem('omnihub_map_dark_mode');
+  const darkModeBtn = document.getElementById('dark-mode-btn');
+  const darkModeText = document.getElementById('dark-mode-text');
+  
+  if (darkMode === 'true') {
+    document.body.classList.add('dark-mode');
+    darkModeText.textContent = 'Light';
+    darkModeBtn.classList.add('active');
+    console.log('🌙 Dark mode preference loaded');
+  }
 }
 
 // Auto-initialize

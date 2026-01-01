@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food & Student Life Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      color: white;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    .dashboard-container {
+      height: 100vh;
+      padding: 50px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 35px;
+      overflow-y: auto;
+    }
+
+    /* Analog Clock */
+    .clock-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .analog-clock {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(30px);
+      border: 4px solid rgba(255, 255, 255, 0.4);
+      position: relative;
+      margin: 0 auto 15px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3),
+                  inset 0 0 40px rgba(255, 255, 255, 0.1);
+    }
+
+    .clock-center {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: white;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .clock-hand {
+      position: absolute;
+      background: white;
+      transform-origin: bottom center;
+      left: 50%;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .hour-hand {
+      width: 6px;
+      height: 50px;
+      bottom: 50%;
+      margin-left: -3px;
+    }
+
+    .minute-hand {
+      width: 4px;
+      height: 70px;
+      bottom: 50%;
+      margin-left: -2px;
+      opacity: 0.9;
+    }
+
+    .second-hand {
+      width: 2px;
+      height: 80px;
+      bottom: 50%;
+      margin-left: -1px;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .current-date {
+      font-size: 24px;
+      font-weight: 400;
+      opacity: 0.9;
+    }
+
+    /* Header */
+    .dashboard-header {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .dashboard-title {
+      font-size: 42px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .dashboard-subtitle {
+      font-size: 18px;
+      opacity: 0.7;
+    }
+
+    /* Main Feature */
+    .main-feature {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 28px;
+      padding: 50px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      min-height: 220px;
+    }
+
+    .main-feature::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .main-feature:hover::before {
+      opacity: 1;
+    }
+
+    .main-feature:hover {
+      background: rgba(255, 255, 255, 0.22);
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+    }
+
+    .main-feature-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 35px;
+    }
+
+    .main-feature-icon {
+      font-size: 96px;
+      filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.3));
+    }
+
+    .main-feature-info {
+      flex: 1;
+    }
+
+    .main-feature-title {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .main-feature-description {
+      font-size: 18px;
+      opacity: 0.85;
+      line-height: 1.6;
+    }
+
+    /* Meal Mode Cards */
+    .meal-modes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .meal-card {
+      background: rgba(255, 255, 255, 0.13);
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 22px;
+      padding: 32px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .meal-card:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .meal-icon {
+      font-size: 56px;
+      margin-bottom: 18px;
+      display: block;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+    }
+
+    .meal-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .meal-description {
+      font-size: 14px;
+      opacity: 0.7;
+      line-height: 1.4;
+    }
+
+    /* Shopping Section */
+    .shopping-section {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 24px;
+      padding: 35px;
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-title-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .action-button {
+      padding: 12px 24px;
+      background: rgba(255, 255, 255, 0.25);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 14px;
+      color: white;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .action-button:hover {
+      background: rgba(255, 255, 255, 0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .list-items {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .list-item {
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .item-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .item-icon {
+      font-size: 28px;
+    }
+
+    .item-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .item-price {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    /* Featured Deals */
+    .deals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 18px;
+    }
+
+    .deal-card {
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .deal-card:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: scale(1.03);
+    }
+
+    .deal-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      display: block;
+      filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.2));
+    }
+
+    .deal-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .deal-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dashboard-container > * {
+      animation: fadeIn 0.7s ease forwards;
+    }
+
+    .dashboard-container > *:nth-child(2) { animation-delay: 0.1s; }
+    .dashboard-container > *:nth-child(3) { animation-delay: 0.2s; }
+    .dashboard-container > *:nth-child(4) { animation-delay: 0.3s; }
+    .dashboard-container > *:nth-child(5) { animation-delay: 0.4s; }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Analog Clock & Date -->
+    <div class="clock-container">
+      <div class="analog-clock">
+        <div class="clock-hand hour-hand" id="hour-hand"></div>
+        <div class="clock-hand minute-hand" id="minute-hand"></div>
+        <div class="clock-hand second-hand" id="second-hand"></div>
+        <div class="clock-center"></div>
+      </div>
+      <div class="current-date" id="current-date">Monday, January 1</div>
+    </div>
+
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div class="dashboard-title">🍿 Food & Student Life</div>
+      <div class="dashboard-subtitle">Find deals, plan meals, and save money</div>
+    </div>
+
+    <!-- Main Snack Scout Feature -->
+    <div class="main-feature" data-module="snackScout" data-testid="snackscout-main-card">
+      <div class="main-feature-content">
+        <span class="main-feature-icon">🍿</span>
+        <div class="main-feature-info">
+          <div class="main-feature-title">Snack Scout</div>
+          <div class="main-feature-description">
+            Find the best snack deals near you, build shopping lists, and save money with smart food search
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meal Modes -->
+    <div class="meal-modes">
+      <div class="meal-card" data-module="snackScout" data-mode="tv-night">
+        <span class="meal-icon">🍿</span>
+        <div class="meal-title">TV Night</div>
+        <div class="meal-description">Chips, popcorn, and movie snacks</div>
+      </div>
+
+      <div class="meal-card" data-module="snackScout" data-mode="study-session">
+        <span class="meal-icon">☕</span>
+        <div class="meal-title">Study Session</div>
+        <div class="meal-description">Energy drinks, coffee, brain food</div>
+      </div>
+
+      <div class="meal-card" data-module="snackScout" data-mode="cheap-eats">
+        <span class="meal-icon">🍕</span>
+        <div class="meal-title">Cheap Eats</div>
+        <div class="meal-description">Budget-friendly meal options</div>
+      </div>
+
+      <div class="meal-card" data-module="snackScout" data-mode="quick-meal">
+        <span class="meal-icon">🍔</span>
+        <div class="meal-title">Quick Meal</div>
+        <div class="meal-description">Fast and easy ready-to-eat</div>
+      </div>
+    </div>
+
+    <!-- Featured Deals -->
+    <div class="shopping-section">
+      <div class="section-title">
+        <div class="section-title-left">
+          <span>🏷️</span>
+          <span>Featured Deals</span>
+        </div>
+      </div>
+      <div class="deals-grid">
+        <div class="deal-card" data-module="snackScout">
+          <span class="deal-icon">🥤</span>
+          <div class="deal-name">Hot Deals</div>
+          <span class="deal-badge">50% OFF</span>
+        </div>
+        <div class="deal-card" data-module="snackScout">
+          <span class="deal-icon">🍔</span>
+          <div class="deal-name">Fast Food</div>
+          <span class="deal-badge">$5 OFF</span>
+        </div>
+        <div class="deal-card" data-module="snackScout">
+          <span class="deal-icon">🥤</span>
+          <div class="deal-name">Snacks</div>
+          <span class="deal-badge">BOGO</span>
+        </div>
+        <div class="deal-card" data-module="snackScout">
+          <span class="deal-icon">☕</span>
+          <div class="deal-name">Beverages</div>
+          <span class="deal-badge">NEW</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Analog Clock Update
+    function updateClock() {
+      const now = new Date();
+      const hours = now.getHours() % 12;
+      const minutes = now.getMinutes();
+      const seconds = now.getSeconds();
+      
+      const hourDeg = (hours * 30) + (minutes * 0.5);
+      const minuteDeg = minutes * 6;
+      const secondDeg = seconds * 6;
+      
+      document.getElementById('hour-hand').style.transform = `rotate(${hourDeg}deg)`;
+      document.getElementById('minute-hand').style.transform = `rotate(${minuteDeg}deg)`;
+      document.getElementById('second-hand').style.transform = `rotate(${secondDeg}deg)`;
+      
+      // Update date
+      const dateEl = document.getElementById('current-date');
+      if (dateEl) {
+        dateEl.textContent = now.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          month: 'long', 
+          day: 'numeric'
+        });
+      }
+    }
+    
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // Module navigation handler
+    function navigateToModule(moduleId, mode) {
+      if (window.parent && window.parent.OmniHub) {
+        console.log('🍿 Food Dashboard: Navigating to module:', moduleId, 'mode:', mode);
+        window.parent.OmniHub.navigateToModule(moduleId);
+      } else {
+        console.warn('⚠️ OmniHub API not available');
+      }
+    }
+
+    // Card click handlers
+    document.querySelectorAll('.main-feature, .meal-card, .deal-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const moduleId = card.getAttribute('data-module');
+        const mode = card.getAttribute('data-mode');
+        if (moduleId) {
+          navigateToModule(moduleId, mode);
+        }
+      });
+    });
+
+    // Button click handlers
+    document.querySelectorAll('.action-button').forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const moduleId = button.getAttribute('data-module');
+        if (moduleId) {
+          navigateToModule(moduleId);
+        }
+      });
+    });
+
+    console.log('🍿 Food & Student Life Dashboard loaded');
+  </script>
+</body>
+</html>

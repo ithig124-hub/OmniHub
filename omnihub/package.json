@@ -1,58 +1,47 @@
 {
-  "name": "omnihub",
-  "version": "1.0.0",
-  "description": "OmniHub - Modular Super App with Map, Notes, Library, Dashboard, Search, and Tracking",
+  "name": "omnihub-v2",
+  "version": "2.0.0",
+  "description": "OmniHub V2 - A multi-module desktop application",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dev": "NODE_ENV=development electron .",
+    "build": "electron-builder",
     "build:win": "electron-builder --win",
-    "build:mac": "electron-builder --mac",
-    "build:linux": "electron-builder --linux",
     "build:all": "electron-builder -mwl"
   },
-  "keywords": [
-    "omnihub",
-    "electron",
-    "modular",
-    "super-app",
-    "map",
-    "notes",
-    "library",
-    "dashboard",
-    "tracking"
-  ],
-  "author": "OmniHub Team",
-  "license": "MIT",
-  "devDependencies": {
-    "electron": "^28.0.0",
-    "electron-builder": "^24.9.1"
-  },
-  "dependencies": {},
   "build": {
     "appId": "com.omnihub.app",
-    "productName": "OmniHub",
+    "productName": "OmniHub V2",
     "directories": {
       "output": "dist"
     },
     "files": [
       "main.js",
       "preload.js",
-      "src/**/*"
+      "index.html",
+      "src/**/*",
+      "node_modules/**/*"
     ],
     "win": {
       "target": "nsis",
-      "icon": "assets/icon.ico"
+      "icon": "src/assets/icons/icon.png"
     },
-    "mac": {
-      "target": "dmg",
-      "icon": "assets/icon.icns",
-      "category": "public.app-category.productivity"
-    },
-    "linux": {
-      "target": "AppImage",
-      "icon": "assets/icon.png",
-      "category": "Utility"
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
     }
+  },
+  "dependencies": {
+    "three": "^0.161.0",
+    "ol": "^9.0.0",
+    "d3": "^7.9.0",
+    "marked": "^12.0.0",
+    "highlight.js": "^11.9.0"
+  },
+  "devDependencies": {
+    "electron": "^28.2.0",
+    "electron-builder": "^24.9.1"
   }
 }
