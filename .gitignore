@@ -83,3 +83,7 @@ omnihub/node_modules/electron/dist/electron
 # Environment files
 *.env
 *.env.*
+-e 
+# Environment files
+*.env
+*.env.*
