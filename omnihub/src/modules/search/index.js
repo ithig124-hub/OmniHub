@@ -1,1 +1,0 @@
-export { SearchModule as default } from './SearchModule';
