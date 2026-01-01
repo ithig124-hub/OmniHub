@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Globe Test - Standalone</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      overflow: hidden;
+      color: white;
+    }
+    
+    #test-status {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 1000;
+      max-width: 400px;
+    }
+    
+    #test-status h2 {
+      margin-bottom: 10px;
+    }
+    
+    .status-item {
+      margin: 5px 0;
+      padding: 5px;
+      border-radius: 3px;
+    }
+    
+    .status-success {
+      background: rgba(16, 185, 129, 0.3);
+    }
+    
+    .status-fail {
+      background: rgba(239, 68, 68, 0.3);
+    }
+    
+    #globe-test-container {
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="test-status">
+    <h2>🌍 Globe Test Status</h2>
+    <div id="status-log"></div>
+  </div>
+  
+  <div id="globe-test-container"></div>
+  
+  <script>
+    const log = document.getElementById('status-log');
+    
+    function addStatus(message, success = true) {
+      const item = document.createElement('div');
+      item.className = 'status-item ' + (success ? 'status-success' : 'status-fail');
+      item.textContent = message;
+      log.appendChild(item);
+      console.log(message);
+    }
+    
+    // Test 1: Check WebGL
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      if (gl) {
+        addStatus('✅ WebGL is available', true);
+      } else {
+        addStatus('❌ WebGL is NOT available', false);
+      }
+    } catch (e) {
+      addStatus('❌ WebGL check failed: ' + e.message, false);
+    }
+    
+    // Test 2: Load Three.js
+    addStatus('⏳ Loading Three.js...');
+    const script1 = document.createElement('script');
+    script1.src = 'https://unpkg.com/three@0.182.0/build/three.min.js';
+    script1.onload = () => {
+      addStatus('✅ Three.js loaded', true);
+      loadGlobeGL();
+    };
+    script1.onerror = () => {
+      addStatus('❌ Failed to load Three.js', false);
+    };
+    document.head.appendChild(script1);
+    
+    // Test 3: Load globe.gl
+    function loadGlobeGL() {
+      addStatus('⏳ Loading globe.gl...');
+      const script2 = document.createElement('script');
+      script2.src = 'https://unpkg.com/globe.gl@2.45.0/dist/globe.gl.min.js';
+      script2.onload = () => {
+        addStatus('✅ globe.gl loaded', true);
+        initTestGlobe();
+      };
+      script2.onerror = () => {
+        addStatus('❌ Failed to load globe.gl', false);
+      };
+      document.head.appendChild(script2);
+    }
+    
+    // Test 4: Initialize Globe
+    function initTestGlobe() {
+      try {
+        addStatus('⏳ Creating globe instance...');
+        const container = document.getElementById('globe-test-container');
+        
+        const globe = Globe()(container)
+          .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+          .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+          .showAtmosphere(true)
+          .atmosphereColor('lightskyblue')
+          .atmosphereAltitude(0.15)
+          .width(window.innerWidth)
+          .height(window.innerHeight);
+        
+        addStatus('✅ Globe created successfully!', true);
+        addStatus('🎉 All tests passed! Globe is working.', true);
+        
+        // Hide status after 3 seconds
+        setTimeout(() => {
+          document.getElementById('test-status').style.opacity = '0';
+          document.getElementById('test-status').style.transition = 'opacity 1s';
+        }, 3000);
+        
+      } catch (error) {
+        addStatus('❌ Failed to create globe: ' + error.message, false);
+      }
+    }
+  </script>
+</body>
+</html>

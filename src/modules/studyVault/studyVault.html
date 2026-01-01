@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Vault - Organize Your Knowledge</title>
+  <link rel="stylesheet" href="studyVault.css">
+</head>
+<body>
+  <div class="study-vault-container">
+    <!-- Header -->
+    <header class="vault-header">
+      <div class="header-content">
+        <div class="header-title">
+          <span class="title-icon">🎓</span>
+          <h1>Study Vault</h1>
+        </div>
+        <p class="header-subtitle">Organize Your Knowledge</p>
+      </div>
+      <div class="header-actions">
+        <button class="filter-tabs-btn" id="filter-all" data-filter="all">All</button>
+        <button class="filter-tabs-btn" id="filter-math" data-filter="math">Math</button>
+        <button class="filter-tabs-btn" id="filter-science" data-filter="science">Science</button>
+        <button class="filter-tabs-btn" id="filter-history" data-filter="history">History</button>
+        <button class="new-card-btn" id="new-card-btn" data-testid="new-card-btn">
+          <span>+ New Card</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <div class="vault-grid">
+      <!-- Quick Access Panel -->
+      <div class="vault-card quick-access-card">
+        <div class="card-header">
+          <h2>Quick Access</h2>
+        </div>
+        <div class="quick-access-content">
+          <button class="quick-item" id="recent-notes" data-testid="recent-notes">
+            <span class="quick-icon">📝</span>
+            <span>Recent Notes</span>
+          </button>
+          <button class="quick-item" id="saved-searches" data-testid="saved-searches">
+            <span class="quick-icon">🔖</span>
+            <span>Saved Searches</span>
+          </button>
+          <button class="quick-item" id="flashcards" data-testid="flashcards">
+            <span class="quick-icon">🎴</span>
+            <span>Flashcards</span>
+          </button>
+          <button class="quick-item review-quiz" id="review-quiz" data-testid="review-quiz">
+            <span class="quick-icon">📊</span>
+            <span>Review Quiz</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Today's Focus Panel -->
+      <div class="vault-card focus-card">
+        <div class="card-header">
+          <h2>Today's Focus</h2>
+        </div>
+        <div class="focus-content">
+          <h3 class="focus-subject" id="focus-subject">Physics: Quantum Mechanics</h3>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width: 45%;"></div>
+          </div>
+          <p class="focus-time" id="focus-time">Study Session: 45m / 1h 30m</p>
+          <button class="resume-btn" id="resume-btn" data-testid="resume-study-btn">
+            <span>Resume Study</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Top Reference Panel -->
+      <div class="vault-card reference-card">
+        <div class="card-header">
+          <h2>Top Reference</h2>
+        </div>
+        <div class="reference-content">
+          <div class="reference-visual">
+            <div class="waveform">
+              <div class="wave" style="height: 60%;"></div>
+              <div class="wave" style="height: 80%;"></div>
+              <div class="wave" style="height: 100%;"></div>
+              <div class="wave" style="height: 75%;"></div>
+              <div class="wave" style="height: 90%;"></div>
+            </div>
+          </div>
+          <h3 class="reference-title">Fourier Transform Basics</h3>
+          <p class="reference-count">(12 Cards)</p>
+          <button class="view-cards-btn" id="view-cards-btn" data-testid="view-cards-btn">
+            <span>View Cards</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Saved Knowledge Cards Section -->
+    <section class="section-cards">
+      <div class="section-header">
+        <h2>Saved Knowledge Cards</h2>
+        <button class="view-all-btn" id="view-all-cards">View All →</button>
+      </div>
+      <div class="knowledge-cards-grid" id="knowledge-cards-grid">
+        <!-- Cards will be dynamically inserted here -->
+      </div>
+    </section>
+
+    <!-- Resource Highlights Section -->
+    <section class="section-resources">
+      <h2>Resource Highlights</h2>
+      <div class="resources-grid">
+        <div class="resource-card">
+          <div class="resource-image" style="background: radial-gradient(ellipse at center, #ff9966 0%, #ff5e62 100%);">
+            <div class="resource-icon">🌌</div>
+          </div>
+          <div class="resource-info">
+            <h4>Black Hole Theory</h4>
+            <p class="resource-type">Article • Wikipedia</p>
+            <button class="resource-btn" data-testid="read-more-btn">Read More</button>
+          </div>
+        </div>
+        <div class="resource-card">
+          <div class="resource-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="resource-icon">📖</div>
+          </div>
+          <div class="resource-info">
+            <h4>Ancient Greece Guide</h4>
+            <p class="resource-type">PDF Summary</p>
+            <button class="resource-btn" data-testid="open-pdf-btn">Open PDF</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Excerpts Section -->
+    <section class="section-excerpts">
+      <h2>Recent Excerpts</h2>
+      <div class="excerpts-list" id="excerpts-list">
+        <!-- Excerpts will be dynamically inserted -->
+      </div>
+    </section>
+
+    <!-- Study Stats Section -->
+    <section class="section-stats">
+      <h2>Study Stats</h2>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-value" id="focus-time-stat">4h 15m</div>
+          <div class="stat-label">Focus Time 🕐</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="cards-reviewed-stat">8</div>
+          <div class="stat-label">Cards Reviewed 📚</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="topics-studied-stat">3</div>
+          <div class="stat-label">Topics Studied 📝</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- New Card Modal -->
+  <div id="new-card-modal" class="modal hidden">
+    <div class="modal-overlay" onclick="closeNewCardModal()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Create Knowledge Card</h3>
+        <button class="modal-close" onclick="closeNewCardModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="card-title">Title</label>
+          <input type="text" id="card-title" placeholder="Enter card title" />
+        </div>
+        <div class="form-group">
+          <label for="card-subject">Subject</label>
+          <select id="card-subject">
+            <option value="physics">Physics</option>
+            <option value="math">Math</option>
+            <option value="biology">Biology</option>
+            <option value="history">History</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="card-content">Content</label>
+          <textarea id="card-content" rows="6" placeholder="Enter your notes or knowledge..."></textarea>
+        </div>
+        <div class="form-actions">
+          <button class="btn-secondary" onclick="closeNewCardModal()">Cancel</button>
+          <button class="btn-primary" onclick="saveNewCard()" data-testid="save-card-btn">Save Card</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="studyVault.js"></script>
+</body>
+</html>
