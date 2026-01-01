@@ -1,0 +1,132 @@
+/* =======================
+   GLOBAL STYLES
+======================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  color: #fff;
+  overflow: hidden;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  transition: background 0.2s, transform 0.2s;
+}
+
+button:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+input {
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+  font-size: 16px;
+}
+
+/* =======================
+   MODULE CONTAINER
+======================= */
+.module-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  box-sizing: border-box;
+  background: linear-gradient(145deg, #2c3e50, #4ca1af);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* =======================
+   SWIPE ANIMATIONS
+======================= */
+.swipe-enter {
+  animation: swipeIn 0.4s forwards;
+}
+
+.swipe-exit {
+  animation: swipeOut 0.4s forwards;
+}
+
+@keyframes swipeIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes swipeOut {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(-100%); opacity: 0; }
+}
+
+/* =======================
+   GRADIENT BUTTONS
+======================= */
+.gradient-btn {
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  color: #fff;
+  font-weight: bold;
+  padding: 8px 15px;
+  margin: 5px 0;
+  text-align: center;
+}
+
+/* =======================
+   GLOBAL SCROLLBAR
+======================= */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+}
+
+/* =======================
+   MODAL / POPUP BASE
+======================= */
+.modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  display: none;
+}
+
+.modal-container.active {
+  display: flex;
+}
+
+.modal-content {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: 15px;
+  max-width: 80%;
+  max-height: 80%;
+  overflow-y: auto;
+}

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maps & Globe Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #3d5ca3 100%);
+      color: white;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .dashboard-container {
+      flex: 1;
+      padding: 40px;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      grid-template-rows: auto 1fr;
+      gap: 25px;
+      overflow-y: auto;
+    }
+
+    .dashboard-header {
+      grid-column: 1 / -1;
+      text-align: center;
+    }
+
+    .dashboard-time-date {
+      grid-column: 1 / -1;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .current-time {
+      font-size: 64px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -2px;
+    }
+
+    .current-date {
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 500;
+      margin-bottom: 15px;
+    }
+
+    .dashboard-title {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .dashboard-subtitle {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 500;
+    }
+
+    /* Large Feature Cards */
+    .feature-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 24px;
+      padding: 40px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      min-height: 350px;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(102, 126, 234, 0.2) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .feature-card:hover::before {
+      opacity: 1;
+    }
+
+    .feature-card:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+    }
+
+    .feature-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      display: block;
+      position: relative;
+      z-index: 1;
+    }
+
+    .feature-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .feature-description {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.6;
+      max-width: 400px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Side Panel */
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .layer-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .layer-card:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateX(-4px);
+    }
+
+    .layer-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .layer-icon {
+      font-size: 28px;
+    }
+
+    .layer-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .layer-description {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-left: 40px;
+    }
+
+    /* Saved Locations */
+    .saved-locations {
+      grid-column: 1 / -1;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 25px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .location-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .location-item {
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .location-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .location-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .location-coords {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dashboard-container > * {
+      animation: fadeIn 0.6s ease forwards;
+    }
+
+    @media (max-width: 968px) {
+      .dashboard-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .feature-card {
+        min-height: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Time and Date Display -->
+    <div class="dashboard-time-date">
+      <div class="current-time" id="current-time">12:00</div>
+      <div class="current-date" id="current-date">Monday, January 1</div>
+    </div>
+
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div class="dashboard-title">🗺️ Navigation</div>
+      <div class="dashboard-subtitle">Explore the world with interactive maps and 3D visualization</div>
+    </div>
+
+    <!-- Main Map Card -->
+    <div class="feature-card" data-module="map" data-testid="map-feature-card">
+      <span class="feature-icon">🗺️</span>
+      <div class="feature-title">Interactive Map</div>
+      <div class="feature-description">
+        OpenLayers-powered map with street and satellite views, pins, routing, and weather overlay
+      </div>
+    </div>
+
+    <!-- Side Panel with Globe Layers -->
+    <div class="side-panel">
+      <div class="layer-card" data-module="globe" data-testid="globe-feature-card">
+        <div class="layer-header">
+          <span class="layer-icon">🌍</span>
+          <div class="layer-title">3D Globe</div>
+        </div>
+        <div class="layer-description">Interactive 3D globe visualization</div>
+      </div>
+
+      <div class="layer-card" data-module="globe" data-layer="flights">
+        <div class="layer-header">
+          <span class="layer-icon">✈️</span>
+          <div class="layer-title">Flight Tracker</div>
+        </div>
+        <div class="layer-description">Real-time flight paths and data</div>
+      </div>
+
+      <div class="layer-card" data-module="globe" data-layer="shipping">
+        <div class="layer-header">
+          <span class="layer-icon">🚢</span>
+          <div class="layer-title">Shipping Routes</div>
+        </div>
+        <div class="layer-description">Global shipping lane visualization</div>
+      </div>
+
+      <div class="layer-card" data-module="globe" data-layer="oceans">
+        <div class="layer-header">
+          <span class="layer-icon">🌊</span>
+          <div class="layer-title">Ocean Data</div>
+        </div>
+        <div class="layer-description">Ocean currents and depth data</div>
+      </div>
+
+      <div class="layer-card" data-module="globe" data-layer="countries">
+        <div class="layer-header">
+          <span class="layer-icon">🌎</span>
+          <div class="layer-title">Country Borders</div>
+        </div>
+        <div class="layer-description">Political boundaries and regions</div>
+      </div>
+    </div>
+
+    <!-- Saved Locations -->
+    <div class="saved-locations">
+      <div class="section-title">
+        <span>📍</span>
+        <span>Saved Locations & Pins</span>
+      </div>
+      <div class="location-grid">
+        <div class="location-item" data-module="map">
+          <div class="location-name">🏠 Home</div>
+          <div class="location-coords">Click to view saved pins</div>
+        </div>
+        <div class="location-item" data-module="map">
+          <div class="location-name">💼 Work</div>
+          <div class="location-coords">Open map to manage</div>
+        </div>
+        <div class="location-item" data-module="map">
+          <div class="location-name">⭐ Favorites</div>
+          <div class="location-coords">View all favorites</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Update time and date
+    function updateTimeAndDate() {
+      const now = new Date();
+      const timeEl = document.getElementById('current-time');
+      const dateEl = document.getElementById('current-date');
+      
+      if (timeEl) {
+        timeEl.textContent = now.toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          hour12: true 
+        });
+      }
+      
+      if (dateEl) {
+        dateEl.textContent = now.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          month: 'long', 
+          day: 'numeric'
+        });
+      }
+    }
+    
+    updateTimeAndDate();
+    setInterval(updateTimeAndDate, 60000);
+
+    // Module navigation handler
+    function navigateToModule(moduleId, layer) {
+      if (window.parent && window.parent.OmniHub) {
+        console.log('🗺️ Navigation Dashboard: Navigating to module:', moduleId, 'layer:', layer);
+        window.parent.OmniHub.navigateToModule(moduleId);
+        // TODO: Pass layer context when module loads
+      } else {
+        console.warn('⚠️ OmniHub API not available');
+      }
+    }
+
+    // Card click handlers
+    document.querySelectorAll('.feature-card, .layer-card, .location-item').forEach(card => {
+      card.addEventListener('click', () => {
+        const moduleId = card.getAttribute('data-module');
+        const layer = card.getAttribute('data-layer');
+        if (moduleId) {
+          navigateToModule(moduleId, layer);
+        }
+      });
+    });
+
+    console.log('🗺️ Navigation Dashboard loaded');
+  </script>
+</body>
+</html>
